@@ -1,0 +1,10 @@
+/* One inset source for controls; the wallpaper still fills the viewport. */
+:root {
+    --app-safe-top: env(safe-area-inset-top, 0px);
+    --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+html.music-android {
+    --app-safe-top: max(env(safe-area-inset-top, 0px), var(--android-top-fallback, 0px));
+    --app-safe-bottom: max(env(safe-area-inset-bottom, 0px), var(--android-bottom-fallback, 0px));
+}
+html.music-android .bottom-dock { padding-bottom: calc(5px + var(--app-safe-bottom)); }

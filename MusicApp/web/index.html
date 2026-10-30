@@ -1,0 +1,2556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!-- Local mirror of http://r.mnq77.top/ (crawled with a valid card key) -->
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#000000">
+    <title>音乐个人主页</title>
+    <style>
+        /* 1. 引入num.ttf字体并定义字体类 */
+        /* local: num font was not available on origin */
+        
+        /* 2. 所有文字使用num.ttf字体 */
+        * {
+            font-family: 'NumFont', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background-color: #f5f5f5; /* 保持内容区域背景为浅色 */
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding-bottom: 60px;
+        }
+        .header {
+            background-color: #000; /* 头部区域为纯黑色背景 */
+            background-size: cover;
+            background-position: center;
+            padding: 15px 20px;
+            position: relative;
+            height: 300px;
+            color: white;
+        }
+        .menu-btn {
+            width: 20px;
+            height: 20px;
+        }
+        .menu-btn img {
+            width: 100%;
+        }
+        .add-status {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #f5f5f5;
+            font-size: 11px;
+        }
+        .search-btn, .more-btn {
+            position: absolute;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+        }
+        .search-btn {
+            right: 70px;
+        }
+        .more-btn {
+            right: 20px;
+        }
+        .search-btn img, .more-btn img {
+            width: 100%;
+        }
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            margin: 20px auto 10px;
+            overflow: hidden;
+            border: 1.5px solid #fff;
+            cursor: pointer;
+        }
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+.username {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px; /* 控制用户名和VIP图标之间的间距 */
+    font-size: 17px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: white;
+    cursor: default;
+    -webkit-tap-highlight-color: transparent;
+    text-align: center;
+}
+
+.vip {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: 0; /* 移除负边距 */
+}
+
+.vip img {
+    width: auto; /* 使用固定值而不是百分比 */
+    height: 18px;
+}
+        .badge {
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .badge-icon {
+            width: 29px;
+            height: 11px;
+            flex-shrink: 0;
+            display: block;
+            margin-right: 5px;
+        }
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .stats span {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        .stats .num-font {
+            color: white;
+        }
+
+        /* 导航区域 */
+      .nav {
+    display: flex;
+    justify-content: center;
+    margin: 10px 0;
+    width: 100%; /* 确保nav容器宽度100% */
+}
+
+.nav-img {
+    width: 100%; /* 设置为屏幕宽度的90% */
+    max-width: none; /* 移除最大宽度限制 */
+    height: auto; /* 高度自适应 */
+    margin: 0 auto;
+    display: block; /* 确保块级显示 */
+}
+
+.nav-img img {
+    width: 100%; /* 图片宽度填充容器 */
+    height: auto; /* 高度自适应保持比例 */
+    display: block;
+    object-fit: contain; /* 保持图片比例，避免变形 */
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+}
+
+        /* 修复标签页间距 */
+        .tab-header {
+            display: flex;
+            justify-content: space-around; /* 改为space-around实现均匀分布 */
+            padding: 15px 0;
+            background-color: #f3f7fa; /* 保持标签页背景为浅色 */
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+        .tab-item {
+            font-size: 16px;
+            font-weight: bold;
+            padding-bottom: 5px;
+            position: relative;
+            cursor: pointer;
+            flex: 1; /* 添加flex:1使每个标签均匀分布 */
+            text-align: center; /* 文字居中 */
+        }
+        .tab-item.active {
+            color: #000; /* 活动标签文字为黑色 */
+        }
+        .tab-item:not(.active) {
+            color: rgba(0, 0, 0, 0.4); /* 非活动标签文字为灰色 */
+        }
+        .tab-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 2px;
+            background-color: #000;
+        }
+        .content {
+            flex: 1;
+            background-color: #fff; /* 内容区域背景为白色 */
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+            margin-top: -15px;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* 内容区域 */
+        .content-image {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .content-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .play-bar {
+            display: flex;
+            align-items: center;
+            background: url("../diao.nmnnn.com/music.png") no-repeat;
+            background-size: cover;
+            background-position: center;
+            padding: 10px;
+            color: #fff;
+            margin: 10px;
+            border-radius: 8px;
+        }
+        .play-bar img {
+            filter: brightness(0) invert(1);
+        }
+        .song-cover {
+            width: 50px;
+            height: 50px;
+            margin-right: 10px;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        .song-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .song-info {
+            flex: 1;
+        }
+        .song-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .play-btn, .list-btn {
+            width: 30px;
+            height: 30px;
+            margin-left: 10px;
+        }
+        .play-btn img, .list-btn img {
+            width: 100%;
+        }
+        
+        /* 悬浮音符图标 */
+        .yin-container {
+    position: fixed;
+    bottom: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: 95%; /* 设置为屏幕宽度的90% */
+    height: auto; /* 高度自适应 */
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.yin-container img {
+    width: 100%; /* 图片宽度填充容器 */
+    height: auto; /* 高度自适应保持比例 */
+    display: block; /* 防止底部有间隙 */
+}
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f3f7fa; /* 底部导航背景为浅色 */
+            padding: 10px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .bottom-nav-item img {
+            width: 16px;
+            height: 18px;
+            margin-bottom: 5px;
+        }
+        .bottom-nav-item span {
+            font-size: 10px;
+            color: #666; /* 底部导航文字为深灰色 */
+        }
+
+        /* 编辑弹窗样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1001;
+            overflow-y: auto;
+        }
+        .modal-content {
+            background-color: #fff; /* 弹窗背景为白色 */
+            margin: 5% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-group input, .form-group select {
+            font-size: 16px;
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .avatar-preview {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            margin: 0 auto 15px;
+            overflow: hidden;
+            border: 2px solid #eee;
+        }
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .vip-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .vip-option {
+            border: 1px solid #ddd;
+            padding: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .vip-option img {
+            max-width: 100%;
+            height: auto;
+        }
+        .vip-option.selected {
+            border-color: #ff4e4e;
+            background-color: #fff0f0;
+        }
+        .vip-category {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        .vip-category-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background-color: #ff4e4e;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #eee;
+            color: #333;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        /* 更新提示弹窗样式 */
+        .update-popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 99999;
+            justify-content: center;
+            align-items: center;
+        }
+        .update-popup-content {
+            background-color: white;
+            border: 3px solid #DAA520;
+            border-radius: 8px;
+            padding: 30px;
+            width: 320px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .update-popup-text {
+            font-weight: bold;
+            color: black;
+            font-size: 14px;
+            line-height: 2;
+            margin-bottom: 20px;
+        }
+        .update-popup-highlight-red {
+            color: red;
+            font-weight: bold;
+        }
+        .update-popup-highlight-blue {
+            color: blue;
+            font-weight: bold;
+        }
+        .update-popup-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: black;
+        }
+        .update-popup-checkbox input {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+        .update-popup-button {
+            background-color: #DAA520;
+            color: black;
+            border: none;
+            padding: 10px 40px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .update-popup-button:hover {
+            background-color: #C9A020;
+        }
+
+        /* 与参考项目保持一致：顶部背景直接参与页面滚动，覆盖顶部安全区。 */
+        html { width: 100%; min-height: 100%; background-color: #000; background-image: var(--profile-background), linear-gradient(#000, #000); background-position: center top; background-size: 100% calc(338px + var(--profile-top-inset) + var(--signature-space, 0px)); background-repeat: no-repeat; background-attachment: scroll; overscroll-behavior-y: none; }
+        body { width: 100%; min-height: 100vh; min-height: 100dvh; background: transparent; -webkit-text-size-adjust: 100%; overscroll-behavior-y: none; }
+        body { display: block; padding-bottom: 0; }
+        :root { --profile-top-inset: var(--app-safe-top, 0px); --profile-background: none; --profile-name-color: #f9e8c2; }
+        .page-scroll { position: relative; display: flex; flex-direction: column; min-height: 100vh; min-height: 100dvh; width: 100%; background: transparent; }
+        .header { flex-shrink: 0; height: calc(338px + var(--profile-top-inset) + var(--signature-space, 0px)); padding-top: calc(15px + var(--profile-top-inset)); background-image: var(--profile-background); background-position: center top; }
+        .add-status, .search-btn, .more-btn { top: calc(20px + var(--profile-top-inset)); }
+        .vip { display: inline-flex; align-items: center; transform: translateY(2px); }
+        .vip img { display: block; }
+        .username-text { position: relative; top: 2px; color: var(--profile-name-color); }
+        .header, .header * { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+        .header .avatar { width: 80px; height: 80px; margin: 37px auto 14px; }
+        .header .badge { margin-bottom: 19px; }
+        .header .stats { gap: 16px; font-size: 13px; line-height: 1.4; font-weight: 400; margin-bottom: 18px; flex-wrap: wrap; row-gap: 5px; }
+        .header .stats > span { white-space: nowrap; }
+        .header .stats .num-font { font-weight: 500; }
+        .header .nav { width: calc(100% + 10px); margin-left: -5px; margin-top: 19px; }
+        .profile-shortcuts { display: flex; align-items: center; gap: 12px; width: 100%; color: #c6c6c9; }
+        .profile-shortcut { flex: 1; min-width: 0; height: 35px; display: flex; align-items: center; justify-content: center; gap: 5px; border-radius: 4px; background: #202022; font-size: 13px; line-height: 1; white-space: nowrap; }
+        .profile-shortcut svg { width: 16px; height: 16px; flex: 0 0 16px; display: block; }
+        .profile-shortcut.shortcut-grid { flex: 0 0 34px; }
+        .profile-shortcut.shortcut-grid svg { width: 16px; height: 16px; flex-basis: 16px; }
+        @media (max-width: 340px) { .profile-shortcuts { gap: 8px; } .profile-shortcut { font-size: 12px; gap: 4px; } }
+
+        .header-add-btn { position: absolute; top: calc(18px + var(--profile-top-inset)); right: 113px; width: 24px; height: 24px; padding: 0; border: 0; background: transparent; color: #f5f5f5; cursor: pointer; }
+        .header-add-btn svg { display: block; width: 24px; height: 24px; }
+        .header .add-status { left: 50%; }
+        .library-action.is-interactive { cursor: pointer; }
+        .library-action.is-interactive:focus-visible { outline: 2px solid #9399ad; outline-offset: 3px; border-radius: 4px; }
+
+        .content { flex: 1 0 auto; min-height: 0; background-color: #f5f6fa; padding-bottom: calc(126px + var(--app-safe-bottom, 0px)); }
+        .content-image { overflow: visible; }
+        .modal { overscroll-behavior: contain; padding-top: var(--app-safe-top, 0px); padding-bottom: var(--app-safe-bottom, 0px); }
+        body.modal-open { overflow: hidden; }
+        .modal { z-index: 2000; -webkit-overflow-scrolling: touch; }
+        .modal input:not([type="checkbox"]):not([type="radio"]), .modal select, .modal textarea { font-size: 16px; line-height: 1.4; max-width: 100%; }
+        .modal input:not([type="checkbox"]):not([type="radio"]):not([type="file"]), .modal select { min-height: 42px; }
+
+        .header.has-background .more-btn img { mix-blend-mode: screen; }
+        .background-preview { width: 100%; height: 130px; border-radius: 8px; background: #000 center / cover no-repeat; margin-bottom: 10px; }
+        .background-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .background-actions input { max-width: 100%; }
+        .background-hint { color: #777; font-size: 12px; line-height: 1.5; margin-top: 8px; }
+
+        /* 视频中的底部文字导航与可操作的小播放器。 */
+        .bottom-dock { position: fixed; left: 0; right: 0; bottom: 0; z-index: 1000; padding: 0 15px calc(3px + var(--app-safe-bottom, 0px)); background: transparent; isolation: isolate; }
+        .bottom-dock button { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .mini-player { display: flex; align-items: center; gap: 9px; height: 48px; margin-bottom: 10px; padding: 0 18px 0 0; border-radius: 30px; background: #fafbff; border: 0; box-shadow: none; color: #161827; }
+        html:not(.has-full-background) .mini-player { border: 1px solid rgba(180,185,199,.48); box-shadow: 0 4px 15px rgba(112,119,140,.12); }
+        .record-button { flex: 0 0 48px; width: 48px; height: 48px; border-radius: 50%; padding: 0; background: #151515; }
+        .record-face { display: block; width: 100%; height: 100%; border-radius: 50%; background: url('yin.png') left top / auto 100% no-repeat; animation: record-spin 24s linear infinite; animation-play-state: paused; }
+        .mini-player.is-playing .record-face { animation-play-state: running; }
+        @keyframes record-spin { to { transform: rotate(360deg); } }
+        .track-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 14px/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+        .track-artist { color: #747681; }
+        .play-toggle, .queue-toggle { flex: 0 0 34px; width: 34px; height: 40px; padding: 4px; display: flex; align-items: center; justify-content: center; background: transparent; color: #262839; }
+        .play-toggle svg { display: block; width: 26px; height: 26px; }
+        .play-pause-icon { display: none; }
+        .mini-player.is-playing .play-start-icon { display: none; }
+        .mini-player.is-playing .play-pause-icon { display: block; }
+        .queue-toggle svg { display: block; width: 23px; height: 23px; }
+        .dock-tabs { display: flex; height: 44px; align-items: center; }
+        .dock-tab { flex: 1; height: 44px; background: transparent; color: #85868d; font-size: 16px; font-weight: 400; }
+        .dock-tab.active { color: #121425; font-weight: 600; }
+        .player-queue { position: absolute; bottom: calc(116px + var(--app-safe-bottom, 0px)); left: 15px; right: 15px; padding: 14px; border-radius: 14px; background: #fafbff; box-shadow: 0 4px 18px rgba(0,0,0,.12); font: 14px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+        .player-queue[hidden] { display: none; }
+        .queue-track { width: 100%; padding: 10px 0; color: #161827; background: transparent; text-align: left; }
+        @media (max-width: 340px) { .bottom-dock { padding-left: 12px; padding-right: 12px; } .mini-player { gap: 6px; padding-right: 8px; } .track-name { font-size: 13px; } }
+
+        /* 播放条两侧柔和模糊，下方保持白色，仅少量透出滚动内容。 */
+        .bottom-dock::before {
+            content: ""; position: absolute; top: -12px; left: 0; right: 0; height: 90px;
+            background: transparent; pointer-events: none; z-index: -1;
+            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 38%, #000 62%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 38%, #000 62%, transparent 100%);
+        }
+        .bottom-dock::after {
+            content: ""; position: absolute; top: 24px; left: 0; right: 0; bottom: 0;
+            background: rgba(250,251,255,.92); pointer-events: none; z-index: -2;
+            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+        }
+        button.track-name { background: transparent; padding: 0; text-align: left; color: inherit; }
+        .record-face { position: relative; }
+        .record-art { position: absolute; inset: 16%; border-radius: 50%; background-position: center; background-size: cover; display: none; }
+        .record-face.has-custom-cover { background: repeating-radial-gradient(circle, #161616 0 2px, #232323 3px, #161616 4px); }
+        .record-face.has-custom-cover .record-art { display: block; }
+        .player-edit-content { margin: 12vh auto; }
+        .cover-preview { width: 110px; height: 110px; margin: 12px auto; border: 17px solid #141414; border-radius: 50%; background: #252525 center / cover no-repeat; }
+        #player-edit-status { color: #777; font-size: 13px; line-height: 1.5; }
+
+        .content-image img[hidden] { display: none; }
+        .music-library { padding: 0 15px 15px; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; }
+        .music-library * { font-family: inherit; }
+        .library-filters { display: flex; align-items: center; gap: 22px; min-height: 44px; font-size: 11px; color: #92949e; }
+        .library-filter-item { display: inline-flex; align-items: center; gap: 2px; white-space: nowrap; }
+        .library-filter-count { font-size: 8px; line-height: 1; position: relative; top: -3px; }
+        .library-lock { width: 11px; height: 13px; display: block; color: #9699a5; }
+        .library-filter-tools { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+        .library-filter-tools svg { display: block; width: 19px; height: 19px; }
+        .library-filter-tools .library-filter-more svg { width: 7px; height: 19px; }
+        .playlist-more { flex: 0 0 20px; width: 20px; height: 38px; padding: 0; border: 0; background: transparent; color: #999ca7; cursor: pointer; display: grid; place-items: center; }
+        .playlist-more svg { width: 10px; height: 22px; display: block; }
+        @media (max-width: 340px) { .library-filters { gap: 14px; } .library-filter-tools { gap: 12px; } .header-add-btn { right: 103px; } }
+        .library-filters span:first-child { color: #252735; }
+        .library-filters .library-filter-tools span { color: #9699a5; }
+        .library-row { display: flex; align-items: center; gap: 11px; min-height: 60px; margin-bottom: 10px; }
+        .library-cover { flex: 0 0 48px; width: 48px; height: 48px; border: 0; border-radius: 4px; background-color: #e7e8ed; background-repeat: no-repeat; position: relative; padding: 0; cursor: pointer; overflow: hidden; }
+        .podcast-library .library-cover { flex-basis: 52px; width: 52px; height: 52px; border-radius: 7px; }
+        .cover-symbol { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: white; pointer-events: none; }
+        .cover-symbol svg { width: 27px; height: 27px; filter: drop-shadow(0 1px 2px rgba(0,0,0,.12)); }
+        .library-copy { flex: 1; min-width: 0; text-align: left; border: 0; padding: 3px 0; background: transparent; cursor: pointer; }
+        .library-title { display: block; color: #171927; font-size: 14px; line-height: 1.5; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .library-subtitle, .library-plays { display: block; color: #92949e; font-size: 11px; line-height: 1.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .library-tag { color: #708cad; border: 1px solid #cbd5e0; border-radius: 3px; font-size: 8px; margin-right: 4px; padding: 0 3px; }
+        .library-pill { flex: 0 0 auto; font-size: 10px; padding: 5px 8px; border: 1px solid #e2e3e9; border-radius: 20px; color: #454754; background: #eceef3; white-space: nowrap; }
+        .library-action { display: flex; align-items: center; gap: 12px; margin-bottom: 13px; color: #272935; font-size: 14px; }
+        .library-action-icon { width: 48px; height: 48px; display: grid; place-items: center; background: #e7e8ed; color: #9699a5; border-radius: 4px; font-size: 27px; font-weight: 300; }
+        .library-placeholder { text-align: center; color: #b0b2ba; font-size: 10px; padding: 7px 0 22px; }
+        .library-heading { margin: 14px 0 12px; font-size: 13px; color: #242631; font-weight: 500; }
+        .library-editor-image { width: 90px; height: 90px; margin: 8px auto 12px; border-radius: 8px; background: #e7e8ed center / cover no-repeat; }
+        .library-editor-hint { font-size: 12px; color: #92949e; margin-bottom: 12px; }
+        #library-edit-status { color: #777; font-size: 13px; }
+        .music-library:not(.podcast-library) .library-tag { color: #e85e6c; border-color: #f0bec7; }
+        .library-action-icon svg { width: 27px; height: 27px; display: block; }
+        .library-pill { display: inline-flex; align-items: center; gap: 3px; }
+        .library-pill svg { width: 12px; height: 12px; flex: 0 0 12px; display: block; }
+        .page-scroll { touch-action: pan-x pinch-zoom; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+        .page-scroll.is-touch-dragging { will-change: transform; }
+        .notes-feed { padding: 0 0 12px; color: #171927; }
+        .notes-feed[hidden], .note-compose[hidden] { display: none; }
+        .notes-top { padding: 18px 24px 16px; display: flex; align-items: center; gap: 12px; color: #626970; }
+        .notes-play-symbol { width: 36px; height: 36px; border-radius: 50%; background: #e88888; display: grid; place-items: center; }
+        .notes-play-symbol svg { width: 20px; height: 20px; }
+        .notes-total { display: block; margin-top: 3px; font-size: 11px; color: #9ba0a6; }
+        .notes-grid { margin-left: auto; width: 17px; height: 17px; color: #818893; }
+        .note-card { padding: 18px 24px 20px; border-bottom: 1px solid #e8ecf0; }
+        .note-profile { display: flex; align-items: center; gap: 12px; }
+        .notes-feed .note-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .note-author-line { display: flex; align-items: center; gap: 5px; min-width: 0; }
+        .note-author-info { min-width: 0; flex: 1; }
+        .note-author-name { font-size: 15px; color: var(--profile-name-color); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        html:not(.has-full-background) .note-author-name { color: #c08239; font-weight: 600; }
+        .notes-feed .note-vip { max-width: 90px; width: auto; height: 13px; object-fit: contain; flex-shrink: 0; }
+        .note-time { margin-top: 4px; font-size: 11px; color: #8c929b; }
+        .note-body { margin: 15px 0 20px 52px; font-size: 15px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .note-body, .note-profile { cursor: pointer; }
+        .note-body:focus-visible { outline: 2px solid #9399ad; outline-offset: 4px; border-radius: 3px; }
+        .note-actions { margin-left: 52px; display: flex; align-items: center; gap: 26px; }
+        .note-actions button { border: 0; padding: 0; background: transparent; color: #545c63; display: inline-flex; align-items: center; gap: 5px; font-family: inherit; font-size: 11px; line-height: 1.4; cursor: pointer; }
+        .note-actions svg { width: 20px; height: 20px; display: block; }
+        .note-actions .note-more { margin-left: auto; width: 12px; height: 24px; }
+        .note-actions .note-more svg { width: 6px; height: 21px; }
+        .notes-end { text-align: center; padding: 20px 15px 10px; font-size: 12px; color: #91979e; }
+        .note-compose { position: fixed; z-index: 1050; right: 24px; bottom: calc(143px + var(--app-safe-bottom, 0px)); width: 48px; height: 48px; display: grid; place-items: center; border: 0; border-radius: 50%; background: #f14e4e; color: white; box-shadow: 0 3px 10px rgba(224,60,60,.22); cursor: pointer; }
+        .note-compose svg { width: 25px; height: 25px; }
+        #note-content-input { width: 100%; min-height: 130px; padding: 10px; border: 1px solid #ddd; border-radius: 4px; resize: vertical; font-family: inherit; }
+        .btn-danger { background: #d94a4a; color: white; }
+        #playlist-delete[hidden], #note-delete[hidden] { display: none; }
+        #note-edit-status { color: #777; font-size: 13px; }
+        @media (max-width: 340px) { .note-card { padding-left: 15px; padding-right: 15px; } .note-actions { gap: 18px; } }
+
+        .collapsed-profile-bar { position: fixed; inset: 0 0 auto; z-index: 1100; height: calc(48px + var(--profile-top-inset)); padding: var(--profile-top-inset) 15px 0; background: #f7f7fc; color: #35364b; opacity: 0; pointer-events: none; }
+        .collapsed-profile-bar.is-visible { pointer-events: auto; }
+        .collapsed-profile-row { height: 48px; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        .collapsed-profile-bar button { border: 0; padding: 0; background: transparent; color: inherit; font-family: inherit; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .collapsed-profile-bar svg { display: block; width: 21px; height: 21px; }
+        .collapsed-profile-person { position: absolute; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 5px; max-width: calc(100% - 190px); }
+        .collapsed-profile-person img { width: 23px; height: 23px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+        .collapsed-profile-name { font-size: 12px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .collapsed-profile-tools { display: flex; align-items: center; gap: 18px; }
+        .collapsed-profile-tools .collapsed-more svg { width: 16px; }
+        @media (max-width: 340px) { .collapsed-profile-tools { gap: 12px; } .collapsed-profile-person { max-width: calc(100% - 166px); } }
+
+        html { scroll-behavior: auto; }
+
+        /* 全屏壁纸独立于滚动内容，覆盖上下安全区。 */
+        .fullscreen-wallpaper { display: none; position: fixed; inset: 0; z-index: 0; pointer-events: none; background-color: #000; background-image: var(--profile-background); background-position: center top; background-size: cover; background-repeat: no-repeat; }
+        html.has-full-background { background-image: var(--profile-background); background-size: cover; background-attachment: fixed; }
+        .has-full-background .fullscreen-wallpaper { display: block; }
+        .has-full-background .page-scroll { z-index: 1; }
+        .has-full-background .header { background: transparent; }
+        .has-full-background .content { background: rgba(0,0,0,.12); color: #fff; }
+        .has-full-background .tab-header { background: transparent; }
+        .has-full-background .tab-item.active::after { background-color: #fff; }
+        .has-full-background .profile-shortcut { background: rgba(255,255,255,.15); color: #fff; border: 0; box-shadow: none; -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
+        /* 播放条使用浅灰蓝玻璃色，保留壁纸色彩。 */
+        .has-full-background .mini-player { background: rgba(178,196,204,.38); color: #fff; border-color: rgba(255,255,255,.08); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); box-shadow: none; }
+        .has-full-background .track-artist { color: rgba(255,255,255,.55); }
+        /* 仅播放条周围柔化被压住的内容，下方导航和安全区直接透出壁纸。
+           遮罩在上下两端渐隐，避免两侧形成一道硬边。 */
+        .has-full-background .bottom-dock::before {
+            top: -12px; bottom: auto; height: 90px;
+            background: transparent;
+            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 38%, #000 62%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, #000 38%, #000 62%, transparent 100%);
+        }
+        /* 用同一张全屏壁纸承接导航，渐隐遮住滚到导航后面的图片和文字。 */
+        .has-full-background .bottom-dock::after {
+            content: ""; position: absolute; top: auto; left: 0; right: 0; bottom: 0;
+            -webkit-backdrop-filter: none; backdrop-filter: none;
+            height: 100vh; height: 100dvh; z-index: -2; pointer-events: none;
+            background-color: #000; background-image: var(--profile-background);
+            background-position: center top; background-size: cover; background-repeat: no-repeat;
+            -webkit-mask-image: linear-gradient(to bottom, transparent calc(100% - 90px - var(--app-safe-bottom, 0px)), #000 calc(100% - 44px - var(--app-safe-bottom, 0px)));
+            mask-image: linear-gradient(to bottom, transparent calc(100% - 90px - var(--app-safe-bottom, 0px)), #000 calc(100% - 44px - var(--app-safe-bottom, 0px)));
+        }
+        .has-full-background .collapsed-profile-bar { background: rgba(35,35,35,.65); color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+        .has-full-background .player-queue { background: rgba(250,251,255,.85); -webkit-backdrop-filter: blur(18px); backdrop-filter: blur(18px); }
+
+        .has-full-background .play-toggle, .has-full-background .queue-toggle,
+        .has-full-background .track-name, .has-full-background .tab-item.active,
+        .has-full-background .library-title, .has-full-background .library-heading,
+        .has-full-background .library-action, .has-full-background .library-filters span:first-child { color: #fff; }
+        .has-full-background .tab-item:not(.active), .has-full-background .dock-tab,
+        .has-full-background .library-subtitle, .has-full-background .library-plays,
+        .has-full-background .library-filters, .has-full-background .library-placeholder { color: rgba(255,255,255,.72); }
+        .has-full-background .dock-tab.active { color: #fff; }
+        .has-full-background .library-pill, .has-full-background .library-action-icon { background: rgba(255,255,255,.18); color: #fff; border-color: rgba(255,255,255,.18); }
+        #background-mode { margin-top: 10px; }
+        .more-btn { color: #fff; background: transparent; border: 0; box-shadow: none; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .more-btn svg { display: block; width: 100%; height: 100%; }
+        .profile-signature { display: none; margin: 8px 0 7px; text-align: center; color: rgba(255,255,255,.85); font-size: 11px; font-weight: 400; line-height: 16px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        html.has-profile-signature { --signature-space: 31px; }
+        .has-profile-signature .profile-signature { display: block; }
+        /* 全屏背景下，笔记正文与操作图标采用浅色。 */
+        .has-full-background .notes-feed,
+        .has-full-background .notes-top,
+        .has-full-background .note-body,
+        .has-full-background .note-actions button,
+        .has-full-background .notes-grid { color: #fff; }
+        .has-full-background .note-time,
+        .has-full-background .notes-total,
+        .has-full-background .notes-end { color: rgba(255,255,255,.75); }
+        .has-full-background .note-card { border-bottom-color: rgba(255,255,255,.15); }
+        .profile-shortcut .shortcut-cutout { display: none; }
+        .has-full-background .profile-shortcut .shortcut-solid { display: none; }
+        .has-full-background .profile-shortcut .shortcut-cutout { display: block; }
+        .has-full-background .song-progress-track { stroke: rgba(255,255,255,.28); }
+        .has-full-background #song-progress-ring { stroke: #fff; }
+
+        .side-overlay { position: fixed; inset: 0; z-index: 12000; background: rgba(0,0,0,.52); visibility: hidden; opacity: 0; transition: opacity .22s, visibility .22s; }
+        .side-overlay.is-open { visibility: visible; opacity: 1; }
+        .side-panel { width: 80%; max-width: 440px; height: 100%; height: 100dvh; background: #f3f6f8; color: #292a3d; display: flex; flex-direction: column; padding: var(--app-safe-top, 0px) 16px var(--app-safe-bottom, 0px); transform: translateX(-100%); transition: transform .22s ease; font-family: -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif; }
+        .side-panel * { font-family: inherit; }
+        .is-open .side-panel { transform: translateX(0); }
+        .side-head { display: flex; align-items: center; gap: 8px; height: 54px; flex-shrink: 0; }
+        .side-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+        .side-name { font-size: 15px; font-weight: 600; color: #cc8219; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; flex: 0 1 auto; max-width: calc(100% - 114px); }
+        .side-icon { width: 20px; height: 20px; flex-shrink: 0; }
+        .side-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .side-vip { border-radius: 7px; padding: 16px; background: linear-gradient(110deg,#ebd7b4,#eee0c6,#e4cfa7); color: #52321c; }
+        .side-vip-top { display: flex; align-items: center; gap: 6px; }
+        .side-vip-title { font-size: 17px; font-weight: 600; flex: 1; white-space: nowrap; }
+        .side-member { border-radius: 24px; background: #fffaf0; padding: 6px 11px; font-size: 11px; white-space: nowrap; }
+        .side-benefits { font-size: 11px; margin-top: 6px; color: #79614c; }
+        .side-duo { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 34px; font-size: 11px; color: #765c46; }
+        .side-list { margin-top: 16px; border-radius: 8px; padding: 0 16px; background: #fff; }
+        .side-row { display: flex; align-items: center; gap: 12px; min-height: 48px; }
+        .side-row-label { font-size: 14px; font-weight: 500; white-space: nowrap; }
+        .side-row-note { margin-left: auto; color: #91909d; font-size: 11px; text-align: right; }
+        .side-count { border: 0; background: transparent; padding: 8px 0 8px 8px; font: inherit; color: inherit; cursor: pointer; }
+        .side-unread { display: inline-block; border-radius: 20px; background: #ff3b40; color: #fff; font-size: 10px; padding: 2px 6px; }
+        .side-divider { height: 1px; background: #eceef1; margin: 6px 0; }
+        .side-footer { display: flex; gap: 16px; padding: 15px 0 12px; flex-shrink: 0; }
+        .side-footer button { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; background: #fff; border: 0; border-radius: 7px; padding: 11px 0; color: #292a3d; font-size: 14px; font-weight: 500; }
+        @media(max-width:360px){.side-panel{padding-left:12px;padding-right:12px}.side-vip{padding:14px 12px}.side-vip-title{font-size:17px}.side-member{padding:6px 8px}.side-row{gap:10px}.side-row-label{font-size:14px}.side-row-note{font-size:10px}.side-duo{font-size:11px}}
+        @media(prefers-reduced-motion:reduce){.side-panel,.side-overlay{transition:none}}
+        .side-name-arrow { margin-right: auto; font-size: 20px; line-height: 1; }
+        .side-head > .side-icon { width: 22px; height: 22px; margin-left: 10px; }
+        .side-scroll { scrollbar-width: none; }
+        .side-scroll::-webkit-scrollbar { display: none; }
+        @media(max-width:360px){.side-name{font-size:14px}.side-row-label{font-size:13px}.side-row{min-height:46px}.side-icon{width:19px;height:19px}.side-vip-title{font-size:16px}.side-head>.side-icon{margin-left:6px}}
+        /* 所有背景模式统一快捷入口的半透明底与镂空图标。 */
+        .profile-shortcut { background: rgba(255,255,255,.15); color: #fff; border: 0; box-shadow: none; -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); }
+        .profile-shortcut .shortcut-solid { display: none; }
+        .profile-shortcut .shortcut-cutout { display: block; }
+        .menu-btn, .menu-btn:focus, .menu-btn:active { outline: none; box-shadow: none; border: 0; background: transparent; -webkit-tap-highlight-color: transparent; }
+        .menu-btn img { -webkit-user-drag: none; user-select: none; }
+        .side-footer #side-more .side-icon { width: 17px; height: 17px; }
+        .side-duo-copy { display: inline-flex; align-items: center; gap: 5px; min-width: 0; }
+        .side-duo-avatars { width: 27px; height: 19px; flex: 0 0 27px; }
+
+        .header .menu-btn { width: 32px; height: 32px; margin: -6px; padding: 6px; display: block; cursor: pointer; touch-action: manipulation; position: relative; z-index: 2; color: #fff; }
+        .header .menu-btn img { display: block; width: 20px; height: 20px; pointer-events: none; }
+        .library-layout-toggle { padding: 0; border: 0; background: transparent; color: inherit; display: flex; align-items: center; justify-content: center; width: 24px; height: 32px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .music-library.library-grid:not([hidden]) { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px 7px; padding-left: 6px; padding-right: 6px; }
+        .library-grid > :not(.library-row) { grid-column: 1 / -1; margin-bottom: 0; }
+        .library-grid .library-filters { margin: 0 9px -16px; }
+        .library-grid .library-row { display: flex; flex-direction: column; align-items: stretch; gap: 7px; min-width: 0; margin-bottom: 0; position: relative; }
+        .library-grid .library-cover { width: 100%; height: auto; aspect-ratio: 1; flex: 0 0 auto; border-radius: 4px; }
+        .library-grid .cover-symbol svg { width: 30%; height: 30%; }
+        .library-grid .library-copy { flex: 0 0 auto; padding: 0; min-width: 0; width: 100%; }
+        .library-grid .library-title { font-size: 13px; line-height: 1.4; font-weight: 500; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .library-grid .library-subtitle { margin-top: 3px; font-size: 10px; line-height: 1.5; white-space: nowrap; }
+        .library-grid .library-row > .library-pill { display: none; }
+        .library-grid .playlist-more { position: absolute; top: 3px; right: 3px; height: 25px; background: rgba(0,0,0,.3); color: #fff; border-radius: 12px; }
+        .library-grid .library-heading, .library-grid .library-action { margin-left: 9px; margin-right: 9px; }
+        .library-grid > .library-action { grid-column: auto; display: flex; flex-direction: column; align-items: stretch; gap: 7px; margin: 0; min-width: 0; font-size: 13px; line-height: 1.4; }
+        .library-grid .library-action-icon { width: 100%; height: auto; aspect-ratio: 1; border-radius: 4px; font-size: 34px; }
+        .library-grid .library-action-icon svg { width: 30%; height: 30%; }
+        .library-grid .library-placeholder { font-size: 12px; line-height: 1.6; padding: 2px 0 4px; }
+        .library-grid > .library-placeholder { margin-top: -10px; margin-bottom: -14px; }
+        .library-grid > .library-heading { margin-top: 0; margin-bottom: -14px; }
+        .library-grid > .library-action { display: none; }
+        .library-filters { font-size: 12px; }
+        .library-filter-count { font-size: 9px; }
+        #editable-library[hidden], #notes-feed[hidden] { display: none !important; }
+        .side-name { font-size: 16px; }
+        .side-name-arrow { display: flex; align-items: center; }
+        .side-name-arrow svg { display: block; width: 8px; height: 14px; }
+        .side-head > .side-icon { stroke-width: 1.9; }
+        .side-vip-title { font-weight: 700; letter-spacing: -.3px; color: #3e210f; }
+        @media(max-width:360px){.side-name{font-size:15px}}
+
+        .personal-screen { position: fixed; inset: 0; z-index: 13000; background: #f5f6fa; color: #17182b; display: flex; flex-direction: column; font-family: -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif; }
+        .personal-screen[hidden], .personal-editor[hidden] { display: none !important; }
+        .personal-screen * { font-family: inherit; }
+        .personal-top { height: calc(54px + var(--app-safe-top, 0px)); padding-top: var(--app-safe-top, 0px); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; font-size: 17px; font-weight: 500; }
+        .personal-back { position: absolute; left: 12px; bottom: 9px; width: 34px; height: 36px; display: grid; place-items: center; border: 0; background: transparent; color: inherit; }
+        .personal-back svg { width: 24px; height: 24px; }
+        .personal-scroll { overflow-y: auto; flex: 1; min-height: 0; padding: 0 16px calc(25px + var(--app-safe-bottom, 0px)); overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+        .personal-portrait { position: relative; width: 88px; height: 88px; margin: 22px auto 40px; }
+        .personal-portrait img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; border: 1px solid #fff; }
+        .personal-avatar-edit { position: absolute; bottom: -8px; left: 50%; transform: translateX(-50%); background: #fff; border: 0; border-radius: 22px; white-space: nowrap; padding: 5px 10px; color: #17182b; font-size: 12px; display: flex; gap: 5px; align-items: center; }
+        .personal-avatar-edit svg { width: 14px; height: 14px; }
+        .personal-group { padding: 12px 0 17px; border-bottom: 1px solid #dcdee7; }
+        .personal-group:first-of-type { padding-top: 0; }
+        .personal-row { width: 100%; min-height: 48px; display: flex; align-items: center; gap: 8px; text-align: left; border: 0; padding: 9px 0; background: transparent; color: inherit; font-size: 14px; font-weight: 400; }
+        button.personal-row { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .personal-label { flex-shrink: 0; color: #55576b; }
+        .personal-value { margin-left: auto; min-width: 0; overflow-wrap: anywhere; text-align: right; }
+        .personal-value.is-empty { color: #9799a8; }
+        .personal-chevron { width: 9px; height: 16px; color: #aaaeba; flex-shrink: 0; }
+        .personal-qr { width: 20px; height: 20px; }
+        .personal-tag { border: 1px solid #dedfe7; border-radius: 4px; padding: 2px 5px; font-size: 12px; }
+        .personal-editor { position: fixed; inset: 0; z-index: 14000; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .personal-editor-card { width: 100%; max-width: 340px; border-radius: 12px; padding: 20px; background: #fff; color: #17182b; }
+        .personal-editor-card h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; }
+        #personal-input { width: 100%; padding: 11px; border: 1px solid #d9dce5; border-radius: 6px; font: 16px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif; color: #17182b; background: #fff; }
+        .personal-editor-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 18px; }
+        .personal-editor-actions button { padding: 8px 15px; border: 0; border-radius: 5px; background: #f0f1f5; font-size: 14px; }
+        #personal-save { background: #ed4545; color: #fff; }
+        #personal-error { color: #c44; font-size: 12px; margin-top: 8px; }
+        #username .username-text { cursor: pointer; }
+        @keyframes personal-enter { from { transform: translateX(100%); } to { transform: translateX(0); } }
+        .personal-screen:not([hidden]) { animation: personal-enter .24s ease-out; }
+        .personal-back, .personal-back:focus, .personal-back:active { outline: none; box-shadow: none; -webkit-tap-highlight-color: transparent; }
+        .personal-group { border-bottom-color: rgba(115,120,140,.10); }
+        .personal-scroll > .personal-group:last-child { border-bottom: 0; }
+        @media(prefers-reduced-motion:reduce){.personal-screen:not([hidden]){animation:none}}
+        .library-grid .playlist-more { display: none; }
+        .image-picker-input { display: none; }
+        .image-picker { display: inline-flex; align-items: center; gap: 9px; max-width: 100%; }
+        .image-picker-button { padding: 7px 11px; background: #f0f1f4; border: 1px solid #d6d8de; border-radius: 5px; color: #222; font: 14px -apple-system,BlinkMacSystemFont,"PingFang SC",sans-serif; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+        .image-picker-status { font-size: 13px; color: #777; white-space: nowrap; }
+        .tabs-dock { position: fixed; top: calc(48px + var(--profile-top-inset)); left: 0; right: 0; z-index: 1090; background: #f5f6fa; }
+        .tabs-dock[hidden] { display: none; }
+        .tabs-dock .tab-header { width: 100%; margin: 0; border-radius: 0; background: #f5f6fa; }
+        .tab-dock-anchor { height: 0; }
+        html.tabs-are-docked .collapsed-profile-bar { background: #f5f6fa; }
+        html.tabs-are-docked .content { border-top-left-radius: 0; border-top-right-radius: 0; }
+        .has-full-background .tabs-dock, .has-full-background.tabs-are-docked .collapsed-profile-bar { background: rgba(35,35,35,.65); color: #fff; -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+        .has-full-background .tabs-dock .tab-header { background: transparent; }
+        .library-filter-anchor { display: none; }
+        .library-grid > .library-filter-anchor.is-docked { grid-column: 1 / -1; margin: 0 9px -16px; }
+        .library-filter-anchor.is-docked { display: block; }
+        .tabs-dock .library-filters { width: 100%; min-height: 44px; margin: 0; padding: 0 15px; background: #f5f6fa; }
+        .has-full-background .tabs-dock .library-filters { background: transparent; color: rgba(255,255,255,.72); }
+        .has-full-background .tabs-dock .library-filters span:first-child { color: #fff; }
+        .has-full-background .tabs-dock .library-filters .library-filter-tools span { color: rgba(255,255,255,.72); }
+        .profile-music-tag { display: inline-flex; align-items: center; min-width: 0; max-width: 40%; margin-left: 6px; font-size: 12px; font-weight: 400; color: inherit; }
+        .profile-music-tag[hidden] { display: none; }
+        .profile-tag-dot { margin-right: 6px; flex-shrink: 0; }
+        #profile-music-tag-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        /* 筛选栏略上移；全屏壁纸下，合并顶部区域使用同一层浅透明底。 */
+        .library-filters { position: relative; top: -5px; }
+        .has-full-background .collapsed-profile-bar,
+        .has-full-background .tabs-dock,
+        .has-full-background.tabs-are-docked .collapsed-profile-bar { background: rgba(0,0,0,.12); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+        /* 固定只改变位置：复制原全屏壁纸的视口裁切与内容区透明遮罩。 */
+        .has-full-background .collapsed-profile-bar,
+        .has-full-background .tabs-dock,
+        .has-full-background.tabs-are-docked .collapsed-profile-bar { background: transparent; -webkit-backdrop-filter: none; backdrop-filter: none; overflow: hidden; isolation: isolate; }
+        .has-full-background .collapsed-profile-bar::before,
+        .has-full-background .tabs-dock::before { content: ""; position: absolute; left: 0; right: 0; height: 100vh; height: 100dvh; z-index: -1; pointer-events: none; background-color: #000; background-image: linear-gradient(rgba(0,0,0,.12),rgba(0,0,0,.12)), var(--profile-background); background-position: center top; background-size: cover; background-repeat: no-repeat; }
+        .has-full-background .collapsed-profile-bar::before { top: 0; }
+        .has-full-background .tabs-dock::before { top: calc(-48px - var(--profile-top-inset)); }
+        .has-full-background .tabs-dock .tab-header,
+        .has-full-background .tabs-dock .library-filters { background: transparent; }
+        /* 常用资料两列排列，保留清晰标签与手机输入尺寸。 */
+        .profile-fields-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; margin: 16px 0; }
+        .profile-fields-grid .form-group { min-width: 0; margin: 0; }
+        .profile-fields-grid label { display: block; margin-bottom: 5px; font-size: 13px; line-height: 1.4; }
+        .profile-fields-grid input, .profile-fields-grid select { width: 100%; min-width: 0; height: 40px; padding: 8px 9px; border: 1px solid #ddd; border-radius: 5px; background: #fff; color: #222; font-size: 16px; box-sizing: border-box; }
+        @media(max-width:340px){.profile-fields-grid{gap:10px}.profile-fields-grid input,.profile-fields-grid select{padding-left:7px;padding-right:7px}}
+    </style>
+<link rel="stylesheet" href="android-insets.css">
+<script src="android-insets.js" defer></script>
+</head>
+<body>
+<div class="side-overlay" id="side-overlay" aria-hidden="true"><aside class="side-panel" role="dialog" aria-modal="true" aria-label="侧边菜单" tabindex="-1"><div class="side-head"><img class="side-avatar" id="side-avatar" alt="头像"><span class="side-name" id="side-name"></span><span class="side-name-arrow"><svg viewBox="0 0 12 20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 4 6 6-6 6"/></svg></span><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="13" rx="4"/><path d="M4 10v2a8 8 0 0 0 16 0v-2M12 20v3"/></svg><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8V5q0-2 2-2h3M16 3h3q2 0 2 2v3M21 16v3q0 2-2 2h-3M8 21H5q-2 0-2-2v-3M6 12h12"/></svg></div><div class="side-scroll"><div class="side-vip"><div class="side-vip-top"><span class="side-vip-title">黑胶SVIP · 染 ›</span><span class="side-member">会员中心</span></div><div class="side-benefits">尊享超30项黑胶SVIP特权</div><div class="side-duo"><span class="side-duo-copy"><svg class="side-duo-avatars" viewBox="0 0 40 25" aria-hidden="true"><circle cx="11" cy="13" r="10" fill="#bdbdb9"/><path d="M3 13q0-10 8-10t8 10" fill="#eee6db"/><ellipse cx="11" cy="15" rx="7" ry="8" fill="#efd6bd"/><path d="m5 7 12 2-12 2z" fill="#d4d0cc"/><g fill="#292a32"><circle cx="8" cy="14" r="2.6"/><circle cx="14" cy="14" r="2.6"/></g><path d="M10 14h2M9 19q2 2 4 0" fill="none" stroke="#6b4634"/><circle cx="29" cy="13" r="10" fill="#483c34"/><ellipse cx="29" cy="15" rx="7" ry="8" fill="#eed0ad"/><path d="M20 9q2-9 10-8l7 4-16 5M20 10l18-2" fill="#e4d6b7" stroke="#796a4d"/><path d="m24 13 2 1m7-1-2 1M27 19q2 1 4-1" fill="none" stroke="#4e3529" stroke-width="1.6" stroke-linecap="round"/></svg><span>和Ta一起开启音乐之旅</span></span><span>双人空间 ›</span></div></div><div class="side-list"><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m7 9 5 4 5-4"/></svg><span class="side-row-label">我的消息</span><span class="side-row-note"><button type="button" class="side-count" id="side-message-edit" aria-label="编辑我的消息数量"><span class="side-unread" id="side-unread">99+</span></button></span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 8q0-5 9-5t9 5v6q-1 8-9 8T3 14zM7 8h10M5 11h14M12 11q-5 1-4 5 1 4 5 2 3-2 1-4-2-1-3 1"/></svg><span class="side-row-label">我的云贝</span><span class="side-row-note">免费兑换黑胶VIP</span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m8 3-6 4 3 4 2-1v11h10V10l2 1 3-4-6-4q-4 4-8 0z"/></svg><span class="side-row-label">装扮中心</span><span class="side-row-note">眠眠兔可爱来袭～</span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 18v-3a8 8 0 1 1 8 0v3M9 18h6M10 21h4M12 17v-5m-3-2 3 2 3-2"/></svg><span class="side-row-label">创作者中心</span><span class="side-row-note"></span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m2 20 7-16 7 16M3 15q8 2 13-8M19 4v16"/></svg><span class="side-row-label">AI写歌</span><span class="side-row-note"></span></div><div class="side-divider"></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 6v6h5"/></svg><span class="side-row-label">最近播放</span><span class="side-row-note"><button type="button" class="side-count" id="side-device-edit" aria-label="编辑登录设备数量"><span id="side-devices">6台设备登录</span></button></span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="14" r="8"/><path d="M9 2h6M12 10v5"/></svg><span class="side-row-label">定时关闭</span><span class="side-row-note"></span></div><div class="side-divider"></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M8 7q4 6 8 0"/></svg><span class="side-row-label">商城</span><span class="side-row-note"></span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 13 10-10q1-1 2 0l2 2q-2 3 1 4l3 3q1 1 0 2L11 24q-1 1-2 0l-3-3q2-3-1-4l-2-2q-1-1 0-2z" transform="translate(0 -1) scale(.96)"/><path d="m10 13 3-3"/></svg><span class="side-row-label">云村有票</span><span class="side-row-note"></span></div><div class="side-row"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21C3 23 1 16 4 10l2-3q0 5 3 5 2-2 1-9 5 3 6 7M17 6q4 4 4 8"/><path d="M20 14v6m0-6 3-1"/><ellipse cx="17.8" cy="20.4" rx="2.2" ry="1.7"/></svg><span class="side-row-label">云推歌</span><span class="side-row-note"></span></div></div></div><div class="side-footer"><button type="button" id="side-settings"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 2 9 5v10l-9 5-9-5V7z"/><circle cx="12" cy="12" r="3"/></svg>设置</button><button type="button" id="side-more"><svg class="side-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="3" y="15" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="m18 2 4 4-4 4-4-4z"/></svg>更多</button></div></aside></div>
+    <div class="fullscreen-wallpaper" aria-hidden="true"></div>
+    <script>
+(function(){
+ const overlay=document.getElementById('side-overlay'), panel=overlay.querySelector('.side-panel');
+ let previousFocus=null, scrollLock=false;
+ let data={messages:99,devices:6};
+ try {const saved=JSON.parse(localStorage.getItem('musicSidebarData')||'null');if(saved){for(const key of ['messages','devices'])if(Number.isInteger(saved[key])&&saved[key]>=0&&saved[key]<=999999)data[key]=saved[key];}}catch(e){}
+ function render(){document.getElementById('side-unread').textContent=data.messages>=99?'99+':String(data.messages);document.getElementById('side-devices').textContent=data.devices+'台设备登录';const avatar=document.getElementById('avatar-img'),name=document.querySelector('#username .username-text');if(avatar)document.getElementById('side-avatar').src=avatar.src;if(name)document.getElementById('side-name').textContent=name.textContent;}
+ function close(){overlay.classList.remove('is-open');overlay.setAttribute('aria-hidden','true');if(!scrollLock)document.body.classList.remove('modal-open');overlay.style.removeProperty('visibility');overlay.style.removeProperty('opacity');if(previousFocus)previousFocus.focus();}
+ function open(){if(overlay.classList.contains('is-open'))return;render();overlay.style.visibility='visible';overlay.style.opacity='1';previousFocus=document.activeElement;scrollLock=document.body.classList.contains('modal-open');document.body.classList.add('modal-open');overlay.classList.add('is-open');overlay.setAttribute('aria-hidden','false');panel.focus();}
+ window.openMusicSidebar=open;
+ function bindMenu(){const menu=document.querySelector('.menu-btn');if(!menu)return;menu.setAttribute('role','button');menu.tabIndex=0;menu.setAttribute('aria-label','打开侧边菜单');let tapStart=null,lastMenuTap=0;
+ menu.addEventListener('touchstart',e=>{const t=e.touches[0];tapStart=t?{x:t.clientX,y:t.clientY}:null;},{passive:true});
+ menu.addEventListener('touchend',e=>{const t=e.changedTouches[0];if(tapStart&&t&&Math.abs(t.clientX-tapStart.x)<10&&Math.abs(t.clientY-tapStart.y)<10){if(e.cancelable)e.preventDefault();e.stopPropagation();lastMenuTap=Date.now();open();}tapStart=null;},{passive:false});
+ menu.addEventListener('click',e=>{e.preventDefault();if(Date.now()-lastMenuTap>500)open();});menu.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}});
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindMenu);else bindMenu();
+ overlay.addEventListener('click',e=>{if(e.target===overlay)close();});
+ overlay.addEventListener('keydown',e=>{if(e.key==='Escape')close();if(e.key==='Tab'){const nodes=Array.from(panel.querySelectorAll('button'));const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&(document.activeElement===first||document.activeElement===panel)){e.preventDefault();last.focus();}else if(!e.shiftKey&&(document.activeElement===last||document.activeElement===panel)){e.preventDefault();first.focus();}}});
+ let touchX=0,touchY=0;panel.addEventListener('touchstart',e=>{touchX=e.touches[0].clientX;touchY=e.touches[0].clientY;},{passive:true});panel.addEventListener('touchend',e=>{const t=e.changedTouches[0];if(t&&touchX-t.clientX>65&&Math.abs(t.clientY-touchY)<50)close();},{passive:true});
+ function edit(key,label){const raw=prompt(label,String(data[key]));if(raw===null)return;const text=raw.trim();if(!/^\d{1,6}$/.test(text)){alert('请输入0–999999之间的整数');return;}const next={...data,[key]:Number(text)};try{localStorage.setItem('musicSidebarData',JSON.stringify(next));data=next;render();}catch(e){alert('保存失败，请检查存储空间后重试');}}
+ document.getElementById('side-message-edit').addEventListener('click',()=>edit('messages','我的消息数量'));
+ document.getElementById('side-device-edit').addEventListener('click',()=>edit('devices','登录设备数量'));
+ for(const id of ['side-settings','side-more'])document.getElementById(id).addEventListener('click',()=>{close();document.querySelector('.more-btn').click();});
+ render();
+})();
+</script>
+    <!-- 更新提示弹窗 -->
+    <div class="update-popup-overlay" id="updatePopup">
+        <div class="update-popup-content">
+            <div class="update-popup-text">
+                <h3 style="color:#000;font-weight:bold;margin:0 0 8px;">赖俊翰667</h3>
+            </div>
+            <div class="update-popup-checkbox">
+                <input type="checkbox" id="hideFor3Days">
+                <label for="hideFor3Days">3天不再显示</label>
+            </div>
+            <button class="update-popup-button" onclick="closeUpdatePopup()">知道了</button>
+        </div>
+    </div>
+    <div class="tabs-dock" id="tabs-dock" hidden></div>
+    <main class="page-scroll" id="page-scroll">
+    <div class="header">
+        <button type="button" class="menu-btn" aria-label="打开侧边菜单" onclick="window.openMusicSidebar && window.openMusicSidebar()">
+            <img src="img/4.png" alt="菜单">
+        </button>
+        <div class="add-status">+ 添加状态</div>
+        <button type="button" class="header-add-btn" aria-label="新建歌单"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></button>
+        <div class="search-btn">
+            <img src="img/5.png" alt="搜索">
+        </div>
+        <div class="more-btn">
+            <svg viewBox="0 0 20 20" aria-hidden="true" fill="currentColor"><circle cx="10" cy="3" r="1.6"/><circle cx="10" cy="10" r="1.6"/><circle cx="10" cy="17" r="1.6"/></svg>
+        </div>
+        <div class="avatar" id="avatar">
+            <img src="tx.jpg" alt="头像" id="avatar-img">
+        </div>
+        <div class="username" id="username"><span class="username-text">赖俊翰667</span><span class="vip"><img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487466/d33c/1c00/03f4/11bb2079fc3623156679d27f9b99fcb4.webp" alt="会员" id="vip-img"></span></div>
+        <div class="profile-signature" id="profile-signature"></div>
+        <div class="badge">
+            <svg class="badge-icon" viewBox="0 0 64 24" role="img" aria-label="男生性别与徽章"><g id="profile-gender-icon" fill="none" stroke="#58b6d5" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="15" r="6"/><path d="M13.5 10.5 23 1M16 1h7v7"/></g><circle cx="33" cy="12" r="1.4" fill="rgba(215,222,230,.8)"/><g fill="none" stroke="#d6dde4" stroke-opacity=".85" stroke-width="1.35" stroke-linecap="round" stroke-linejoin="round"><path d="m51 2 6 2.5q3 1 3 4V14q0 6-9 9-9-3-9-9V8.5q0-3 3-4z"/><path d="m51 7 1.8 3.4 3.7.5-2.7 2.6.6 3.7-3.4-1.8-3.4 1.8.6-3.7-2.7-2.6 3.7-.5z"/></g></svg>
+            <span class="num-font" id="badge-count">12</span>枚徽章<span class="profile-music-tag" id="profile-music-tag" hidden><span class="profile-tag-dot" aria-hidden="true">·</span><span id="profile-music-tag-text"></span></span>
+        </div>
+        <div class="stats">
+            <span><span class="num-font" id="follow-count">13</span> 关注</span>
+            <span><span class="num-font" id="fans-count">13</span> 粉丝</span>
+            <span><span class="num-font" id="level">Lv.7</span></span>
+            <span><span class="num-font" id="hours">667</span> 小时</span>
+        </div>
+        <div class="nav">
+            <div class="profile-shortcuts" aria-label="最近、本地、会员、装扮">
+                <span class="profile-shortcut"><svg class="shortcut-solid" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="M11.5 6.3v7h4.1" fill="none" stroke="#202022" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="shortcut-cutout" viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="shortcut-cutout-1" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="white"/><path d="M11.5 6.3v7h4.1" fill="none" stroke="#000" stroke-width="2.7" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><g mask="url(#shortcut-cutout-1)"><circle cx="12" cy="12" r="11" fill="currentColor"/></g></svg><span>最近</span></span>
+                <span class="profile-shortcut"><svg class="shortcut-solid" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 2.5h12" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M5.5 6.5h13q3 0 3 3v10q0 3.5-3.5 3.5H6q-3.5 0-3.5-3.5v-10q0-3 3-3z" fill="currentColor"/><path d="M12 10v7.5m-3-3 3 3 3-3" fill="none" stroke="#202022" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><svg class="shortcut-cutout" viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="shortcut-cutout-2" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="white"/><path d="M12 10v7.5m-3-3 3 3 3-3" fill="none" stroke="#000" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><g mask="url(#shortcut-cutout-2)"><path d="M6 2.5h12" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/><path d="M5.5 6.5h13q3 0 3 3v10q0 3.5-3.5 3.5H6q-3.5 0-3.5-3.5v-10q0-3 3-3z" fill="currentColor"/></g></svg><span>本地</span></span>
+                <span class="profile-shortcut"><svg class="shortcut-solid" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="currentColor"/><path d="m4.1 8.2 2 7.6h2l2-7.6H8.2L7.1 13.6 6 8.2zM11 8.2h1.8v7.6H11zm3.2 0h3.1c1.9 0 2.8 1 2.8 2.6s-.9 2.6-2.8 2.6H16v2.4h-1.8zm1.8 1.6v2h1.1c.8 0 1.2-.3 1.2-1s-.4-1-1.2-1z" fill="#202022" fill-rule="evenodd"/></svg><svg class="shortcut-cutout" viewBox="0 0 24 24" aria-hidden="true"><defs><mask id="shortcut-cutout-3" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="white"/><path d="m4.1 8.2 2 7.6h2l2-7.6H8.2L7.1 13.6 6 8.2zM11 8.2h1.8v7.6H11zm3.2 0h3.1c1.9 0 2.8 1 2.8 2.6s-.9 2.6-2.8 2.6H16v2.4h-1.8zm1.8 1.6v2h1.1c.8 0 1.2-.3 1.2-1s-.4-1-1.2-1z" fill="#000" fill-rule="evenodd"/></mask></defs><g mask="url(#shortcut-cutout-3)"><circle cx="12" cy="12" r="11" fill="currentColor"/></g></svg><span>会员</span></span>
+                <span class="profile-shortcut"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2.8 6 4 1.5 7.2q-1 .7-.2 1.7l2.4 3q.5.6 1.1.1L7 10.6V17h10v-6.4l2.2 1.4q.6.5 1.1-.1l2.4-3q.8-1-.2-1.7L18 4l-2-1.2q-4 3.3-8 0Z" fill="currentColor"/><path d="M7 19h10q-.2 3-3 3h-4q-2.8 0-3-3z" fill="currentColor"/></svg><span>装扮</span></span>
+                <span class="profile-shortcut shortcut-grid" aria-label="更多应用"><svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="2" y="3" width="7.5" height="7.5" rx="1"/><path d="m17.5 2.6 4 4q.4.4 0 .8l-4 4q-.4.4-.8 0l-4-4q-.4-.4 0-.8l4-4q.4-.4.8 0z"/><rect x="2" y="14" width="7.5" height="7.5" rx="1"/><rect x="13.5" y="14" width="7.5" height="7.5" rx="1"/></svg></span>
+            </div>
+        </div>
+    </div>
+    <div class="content">
+        <div class="tab-dock-anchor" id="tab-dock-anchor" aria-hidden="true"></div>
+        <div class="tab-header">
+            <div class="tab-item active" id="music-tab">音乐</div>
+            <div class="tab-item" id="podcast-tab">播客</div>
+            <div class="tab-item" id="note-tab">笔记</div>
+        </div>
+        
+        <div class="content-image">
+            <div id="editable-library"></div>
+            <img src="neirong3.png" alt="笔记内容" id="content-img" hidden>
+            <div class="notes-feed" id="notes-feed" hidden></div>
+        </div>
+    </div>
+    
+    </main>
+    <div class="collapsed-profile-bar" id="collapsed-profile-bar" aria-hidden="true" inert>
+        <div class="collapsed-profile-row">
+            <button type="button" data-profile-action=".menu-btn" aria-label="菜单"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M5 6h14M5 12h14M5 18h14"/></svg></button>
+            <button type="button" class="collapsed-profile-person" data-profile-action=".more-btn" aria-label="编辑个人资料"><img id="collapsed-profile-avatar" src="tx.jpg" alt=""><span class="collapsed-profile-name" id="collapsed-profile-name">赖俊翰667</span></button>
+            <div class="collapsed-profile-tools">
+                <button type="button" data-profile-action=".header-add-btn" aria-label="新建歌单"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg></button>
+                <button type="button" data-profile-action=".search-btn" aria-label="搜索"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg></button>
+                <button type="button" class="collapsed-more" data-profile-action=".more-btn" aria-label="更多"><svg viewBox="0 0 16 24" fill="currentColor"><circle cx="8" cy="5" r="1.5"/><circle cx="8" cy="12" r="1.5"/><circle cx="8" cy="19" r="1.5"/></svg></button>
+            </div>
+        </div>
+    </div>
+    <button type="button" class="note-compose" id="note-compose" aria-label="发布笔记" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg></button>
+    <div class="bottom-dock">
+        <div class="mini-player" id="mini-player">
+            <button type="button" class="record-button" id="record-button" aria-label="修改唱片图片"><span class="record-face" aria-hidden="true"><span class="record-art"></span></span></button>
+            <button type="button" class="track-name" id="track-edit" aria-label="修改歌曲信息"><span id="track-title">爱笑的眼睛 (Smiling Eyes)</span><span class="track-artist" id="track-artist"> - 林俊杰</span></button>
+            <button type="button" class="play-toggle" id="play-toggle" aria-label="播放" aria-pressed="false">
+                <svg viewBox="0 0 32 32" aria-hidden="true"><circle class="song-progress-track" cx="16" cy="16" r="13.5" fill="none" stroke="#c4c5ce" stroke-width="2"/><circle id="song-progress-ring" cx="16" cy="16" r="13.5" fill="none" stroke="#262839" stroke-width="2.3" stroke-linecap="round" stroke-dasharray="84.823" stroke-dashoffset="84.823" transform="rotate(-90 16 16)"/><path class="play-start-icon" d="M12 9.5v13l10-6.5z" fill="currentColor"/><g class="play-pause-icon" fill="currentColor"><rect x="11" y="10" width="3.5" height="12" rx=".6"/><rect x="17.5" y="10" width="3.5" height="12" rx=".6"/></g></svg>
+            </button>
+            <button type="button" class="queue-toggle" id="queue-toggle" aria-label="播放列表" aria-expanded="false" aria-controls="player-queue"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M3 3v10l8-5z" fill="currentColor"/><path d="M15 8h14M3 18h26M3 28h26" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+        </div>
+        <nav class="dock-tabs" aria-label="底部导航">
+            <button type="button" class="dock-tab">首页</button>
+            <button type="button" class="dock-tab">搜索</button>
+            <button type="button" class="dock-tab">笔记</button>
+            <button type="button" class="dock-tab active" aria-current="page">我的</button>
+        </nav>
+        <div class="player-queue" id="player-queue" hidden>
+            <div>播放列表</div>
+            <button type="button" class="queue-track" id="queue-track">爱笑的眼睛 (Smiling Eyes) - 林俊杰</button>
+        </div>
+    </div>
+
+    <div class="modal" id="player-edit-modal" role="dialog" aria-modal="true" aria-labelledby="player-edit-title">
+        <div class="modal-content player-edit-content">
+            <div class="modal-header"><div class="modal-title" id="player-edit-title">修改歌曲信息</div><button type="button" class="close-btn btn btn-secondary" id="player-edit-close" aria-label="关闭">×</button></div>
+            <div id="song-edit-fields">
+                <div class="form-group"><label for="song-title-input">歌曲名称</label><input id="song-title-input" type="text" maxlength="80"></div>
+                <div class="form-group"><label for="song-artist-input">歌手名称</label><input id="song-artist-input" type="text" maxlength="80"></div>
+                <div class="form-group"><label for="song-duration-input">歌曲时长（秒）</label><input id="song-duration-input" type="number" min="1" max="7200" value="210"></div>
+            </div>
+            <div id="cover-edit-fields" hidden>
+                <div class="cover-preview" id="cover-preview"></div>
+                <div class="form-group"><label for="record-upload">唱片内部图片</label><input id="record-upload" type="file" accept="image/*"></div>
+                <p class="background-hint">图片居中显示在黑色唱片内，外圈和旋转效果保留。</p>
+            </div>
+            <p id="player-edit-status" role="status" aria-live="polite"></p>
+            <div class="modal-footer"><button type="button" class="btn btn-secondary" id="player-edit-cancel">取消</button><button type="button" class="btn btn-primary" id="player-edit-save">保存</button></div>
+        </div>
+    </div>
+
+    <div class="modal" id="library-edit-modal" role="dialog" aria-modal="true" aria-labelledby="library-edit-title">
+        <div class="modal-content">
+            <div class="modal-header"><div class="modal-title" id="library-edit-title">修改条目</div><button type="button" class="btn btn-secondary" id="library-edit-close">×</button></div>
+            <div class="library-editor-image" id="library-cover-preview"></div>
+            <div class="form-group"><label for="library-cover-upload">封面图片</label><input id="library-cover-upload" type="file" accept="image/*"></div>
+            <p class="library-editor-hint" id="library-overlay-hint"></p>
+            <div class="form-group"><label for="library-title-input">名称</label><input id="library-title-input" type="text" maxlength="120"></div>
+            <div class="form-group"><label for="library-subtitle-input">简介／歌曲数量</label><input id="library-subtitle-input" type="text" maxlength="180"></div>
+            <div class="form-group"><label for="library-plays-input">播放数据</label><input id="library-plays-input" type="text" maxlength="100"></div>
+            <div class="form-group"><label for="library-tag-input">标签</label><input id="library-tag-input" type="text" maxlength="30"></div>
+            <div id="playlist-fields" hidden>
+                <div class="form-group"><label for="playlist-type-input">类型小字</label><input id="playlist-type-input" type="text" maxlength="30" value="歌单"></div>
+                <div class="form-group"><label for="playlist-count-input">歌曲数量（首）</label><input id="playlist-count-input" type="number" min="0" max="1000000" step="1" value="0"></div>
+                <div class="form-group"><label for="playlist-owner-input">用户名字</label><input id="playlist-owner-input" type="text" maxlength="80"></div>
+            </div>
+            <p id="library-edit-status" role="status" aria-live="polite"></p>
+            <div class="modal-footer"><button type="button" class="btn btn-danger" id="playlist-delete" hidden>删除歌单</button><button type="button" class="btn btn-secondary" id="library-edit-cancel">取消</button><button type="button" class="btn btn-primary" id="library-edit-save">保存</button></div>
+        </div>
+    </div>
+
+    <!-- 编辑弹窗 -->
+    <div class="modal" id="note-edit-modal" role="dialog" aria-modal="true" aria-labelledby="note-edit-title">
+        <div class="modal-content">
+            <div class="modal-header"><div class="modal-title" id="note-edit-title">发布笔记</div><button type="button" class="btn btn-secondary" id="note-edit-close">×</button></div>
+            <div class="form-group"><label for="note-time-input">显示时间</label><input id="note-time-input" type="text" maxlength="80" placeholder="刚刚／7月31日"></div>
+            <div class="form-group"><label for="note-content-input">笔记文案</label><textarea id="note-content-input" maxlength="5000" placeholder="写下你的笔记…"></textarea></div>
+            <div class="form-group"><label for="note-comments-input">评论数量</label><input id="note-comments-input" type="number" min="0" max="999999999" step="1" value="0"></div>
+            <div class="form-group"><label for="note-likes-input">赞的数量</label><input id="note-likes-input" type="number" min="0" max="999999999" step="1" value="0"></div>
+            <p id="note-edit-status" role="status" aria-live="polite"></p>
+            <div class="modal-footer"><button type="button" class="btn btn-danger" id="note-delete" hidden>删除笔记</button><button type="button" class="btn btn-secondary" id="note-edit-cancel">取消</button><button type="button" class="btn btn-primary" id="note-edit-save">发布</button></div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">编辑信息</div>
+                <div class="close-btn" id="closeModal">×</div>
+            </div>
+            
+            <div class="form-group">
+                <div class="avatar-preview">
+                    <img src="tx.jpg" alt="头像预览" id="avatar-preview">
+                </div>
+                <input type="file" id="avatar-upload" class="image-picker-input" accept="image/*"><span class="image-picker"><button type="button" class="image-picker-button" data-image-picker="avatar-upload">选取图片</button><span id="avatar-selection" class="image-picker-status" aria-live="polite">未选择图片</span></span>
+            </div>
+            
+            <div class="form-group">
+                <label for="background-upload">主页背景：</label>
+                <select id="background-mode" aria-label="背景范围"><option value="top">仅顶部背景</option><option value="full">全屏背景</option></select>
+                <div class="background-preview" id="background-preview" role="img" aria-label="背景预览"></div>
+                <div class="background-actions">
+                    <input type="file" id="background-upload" class="image-picker-input" accept="image/*"><span class="image-picker"><button type="button" class="image-picker-button" data-image-picker="background-upload">选取图片</button><span id="background-selection" class="image-picker-status" aria-live="polite">未选择图片</span></span>
+                    <button type="button" class="btn btn-secondary" id="background-reset">恢复默认背景</button>
+                </div>
+                <p class="background-hint" id="background-status" role="status" aria-live="polite"></p>
+            </div>
+
+            <div class="form-group">
+                <label for="username-input">用户名称：</label>
+                <input type="text" id="username-input" value="赖俊翰667">
+            </div>
+            
+            <div class="form-group">
+                <label for="signature-input">个性签名：</label>
+                <input type="text" id="signature-input" maxlength="80" placeholder="写一句你的个性签名，留空则不显示">
+            </div>
+
+            <div class="profile-fields-grid">
+<div class="form-group">
+                <label for="gender-input">性别：</label>
+                <select id="gender-input"><option value="male">男生</option><option value="female">女生</option></select>
+            </div>
+
+            <div class="form-group">
+                <label for="badge-input">徽章数量：</label>
+                <input type="number" id="badge-input" value="12">
+            </div>
+            
+            <div class="form-group">
+                <label for="follow-input">关注数量：</label>
+                <input type="number" id="follow-input" value="13">
+            </div>
+            
+            <div class="form-group">
+                <label for="fans-input">粉丝数量：</label>
+                <input type="number" id="fans-input" value="13">
+            </div>
+            
+            <div class="form-group">
+                <label for="level-input">等级数量：</label>
+                <input type="text" id="level-input" value="Lv.7">
+            </div>
+            
+            <div class="form-group">
+                <label for="hours-input">小时数量：</label>
+                <input type="number" id="hours-input" value="667">
+            </div>
+            </div>
+            
+            <div class="form-group">
+                <label>VIP图标</label>
+                <select id="vip-type">
+                    <option value="vip">VIP</option>
+                    <option value="svip">SVIP</option>
+                    <option value="special">特殊图标</option>
+                </select>
+                
+                <div id="vip-normal" class="vip-category">
+                    <div class="vip-category-title">普通状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="assets/proxy/27f5970d6d4f9007.png">
+                            <img src="assets/proxy/27f5970d6d4f9007.png" alt="v0">
+                            <div>v0</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/a861f1aae5362d85.png">
+                            <img src="assets/proxy/a861f1aae5362d85.png" alt="v1">
+                            <div>v1</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/f6a8395f3ee1a5d8.png">
+                            <img src="assets/proxy/f6a8395f3ee1a5d8.png" alt="v2">
+                            <div>v2</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/bab093bdb40635ce.png">
+                            <img src="assets/proxy/bab093bdb40635ce.png" alt="v3">
+                            <div>v3</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/6941448b6acddad9.png">
+                            <img src="assets/proxy/6941448b6acddad9.png" alt="v4">
+                            <div>v4</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/4a12f45bf36fdd8f.png">
+                            <img src="assets/proxy/4a12f45bf36fdd8f.png" alt="v5">
+                            <div>v5</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/ed1d2bc7b7ec021e.png">
+                            <img src="assets/proxy/ed1d2bc7b7ec021e.png" alt="v6">
+                            <div>v6</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/157500bd21296801.png">
+                            <img src="assets/proxy/157500bd21296801.png" alt="v7">
+                            <div>v7</div>
+                        </div>
+                    </div>
+                </div>
+<div id="vip-animated" class="vip-category">
+                    <div class="vip-category-title">动效状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141379825/38a5/43a5/79d3/b71cbffe50f3bd5d21fea4fee0f28433.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141379825/38a5/43a5/79d3/b71cbffe50f3bd5d21fea4fee0f28433.webp" alt="v0">
+                            <div>v0</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141387354/ccf7/52e6/a3c7/edcb0a1bddc423b8efd23a55e70ecff1.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141387354/ccf7/52e6/a3c7/edcb0a1bddc423b8efd23a55e70ecff1.webp" alt="v1">
+                            <div>v1</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141390014/d816/86b3/2db8/631f4468ca344af5caad8d1875d0453e.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141390014/d816/86b3/2db8/631f4468ca344af5caad8d1875d0453e.webp" alt="v2">
+                            <div>v2</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141390012/8f22/7796/8597/3c4e43ad7036268bd80ec4a4d7623d61.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141390012/8f22/7796/8597/3c4e43ad7036268bd80ec4a4d7623d61.webp" alt="v3">
+                            <div>v3</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141385845/1920/a68a/ee92/8f89aff7cbc6122eeb7c2d78e0b7c5fc.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141385845/1920/a68a/ee92/8f89aff7cbc6122eeb7c2d78e0b7c5fc.webp" alt="v4">
+                            <div>v4</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141386672/0d87/87cf/93f7/7ec3aad495032568774a84f964806303.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141386672/0d87/87cf/93f7/7ec3aad495032568774a84f964806303.webp" alt="v5">
+                            <div>v5</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141388259/2ff9/0285/5c0d/67aabccc4753db74b7f3aee9e485bf7d.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141388259/2ff9/0285/5c0d/67aabccc4753db74b7f3aee9e485bf7d.webp" alt="v6">
+                            <div>v6</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141388261/a2e9/3284/e98d/937112ec4f5a78553946211a9794eb21.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32141388261/a2e9/3284/e98d/937112ec4f5a78553946211a9794eb21.webp" alt="v7">
+                            <div>v7</div>
+                        </div>
+                    </div>
+                </div>
+<div id="svip-normal" class="vip-category" style="display:none;">
+                    <div class="vip-category-title">SVIP普通状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="assets/proxy/08d548363ee25a95.png">
+                            <img src="assets/proxy/08d548363ee25a95.png" alt="v0">
+                            <div>v0</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/ffbb9ea8f63723d3.png">
+                            <img src="assets/proxy/ffbb9ea8f63723d3.png" alt="v1">
+                            <div>v1</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/1af76dcbaae1b69d.png">
+                            <img src="assets/proxy/1af76dcbaae1b69d.png" alt="v2">
+                            <div>v2</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/54adc991e5d099e9.png">
+                            <img src="assets/proxy/54adc991e5d099e9.png" alt="v3">
+                            <div>v3</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/9b18d2133e46faf5.png">
+                            <img src="assets/proxy/9b18d2133e46faf5.png" alt="v4">
+                            <div>v4</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/d197b296b8a49926.png">
+                            <img src="assets/proxy/d197b296b8a49926.png" alt="v5">
+                            <div>v5</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/946107cd5e572874.png">
+                            <img src="assets/proxy/946107cd5e572874.png" alt="v6">
+                            <div>v6</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/5fee29ffcc1e6862.png">
+                            <img src="assets/proxy/5fee29ffcc1e6862.png" alt="v7">
+                            <div>v7</div>
+                        </div>
+                    </div>
+                </div>
+<div id="svip-animated" class="vip-category" style="display:none;">
+                    <div class="vip-category-title">动效状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32583288176/8e6a/f3d5/3255/9328d77966414188659c9c07dbe6a13e.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32583288176/8e6a/f3d5/3255/9328d77966414188659c9c07dbe6a13e.webp" alt="v0">
+                            <div>v0</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487464/2e1f/ecdc/229f/cbd1adbf4f4e2152424affdbcc6068a1.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487464/2e1f/ecdc/229f/cbd1adbf4f4e2152424affdbcc6068a1.webp" alt="v1">
+                            <div>v1</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487465/131d/6e6a/8b8d/375f2af414ef6aa599ab4bb26c2f3333.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487465/131d/6e6a/8b8d/375f2af414ef6aa599ab4bb26c2f3333.webp" alt="v2">
+                            <div>v2</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582486577/ab6f/56b2/32fd/0f4f364a25a9da04bbf2ce43cde75314.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582486577/ab6f/56b2/32fd/0f4f364a25a9da04bbf2ce43cde75314.webp" alt="v3">
+                            <div>v3</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582489371/5955/f627/5eb6/ec7bb5007dcdec759352fc2d02b1c805.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582489371/5955/f627/5eb6/ec7bb5007dcdec759352fc2d02b1c805.webp" alt="v4">
+                            <div>v4</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582486576/eca5/2cd4/7de6/cabfdcbd5b9128f6691eb740615dec17.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582486576/eca5/2cd4/7de6/cabfdcbd5b9128f6691eb740615dec17.webp" alt="v5">
+                            <div>v5</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487467/9486/1d22/0ffd/b31ece10bfab6821ee61d53f86114def.webp">
+                            <img src="external/p5.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487467/9486/1d22/0ffd/b31ece10bfab6821ee61d53f86114def.webp" alt="v6">
+                            <div>v6</div>
+                        </div>
+                        <div class="vip-option" data-url="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487466/d33c/1c00/03f4/11bb2079fc3623156679d27f9b99fcb4.webp">
+                            <img src="external/p6.music.126.net/obj/wonDlsKUwrLClGjCm8Kx/32582487466/d33c/1c00/03f4/11bb2079fc3623156679d27f9b99fcb4.webp" alt="v7">
+                            <div>v7</div>
+                        </div>
+                    </div>
+                </div>
+<div id="svip-new-animated" class="vip-category" style="display:none;"><div class="vip-category-title">新款动效状态</div><div class="vip-options"><div class="vip-option" data-url="assets/member/new_svip_03.png"><img src="assets/member/new_svip_03.png" alt="新款动效 1"><div>新款动效 1</div></div><div class="vip-option" data-url="assets/member/new_svip_04.png"><img src="assets/member/new_svip_04.png" alt="新款动效 2"><div>新款动效 2</div></div><div class="vip-option" data-url="assets/member/new_svip_05.png"><img src="assets/member/new_svip_05.png" alt="新款动效 3"><div>新款动效 3</div></div><div class="vip-option" data-url="assets/member/new_svip_06.png"><img src="assets/member/new_svip_06.png" alt="新款动效 4"><div>新款动效 4</div></div><div class="vip-option" data-url="assets/member/new_svip_07.png"><img src="assets/member/new_svip_07.png" alt="新款动效 5"><div>新款动效 5</div></div><div class="vip-option" data-url="assets/member/new_svip_08.png"><img src="assets/member/new_svip_08.png" alt="新款动效 6"><div>新款动效 6</div></div><div class="vip-option" data-url="assets/member/new_svip_09.png"><img src="assets/member/new_svip_09.png" alt="新款动效 7"><div>新款动效 7</div></div><div class="vip-option" data-url="assets/member/new_svip_10.png"><img src="assets/member/new_svip_10.png" alt="新款动效 8"><div>新款动效 8</div></div><div class="vip-option" data-url="assets/member/new_svip_11.png"><img src="assets/member/new_svip_11.png" alt="新款动效 9"><div>新款动效 9</div></div><div class="vip-option" data-url="assets/member/new_svip_12.png"><img src="assets/member/new_svip_12.png" alt="新款动效 10"><div>新款动效 10</div></div><div class="vip-option" data-url="assets/member/new_svip_13.png"><img src="assets/member/new_svip_13.png" alt="新款动效 11"><div>新款动效 11</div></div><div class="vip-option" data-url="assets/member/new_svip_14.png"><img src="assets/member/new_svip_14.png" alt="新款动效 12"><div>新款动效 12</div></div><div class="vip-option" data-url="assets/member/new_svip_15.png"><img src="assets/member/new_svip_15.png" alt="新款动效 13"><div>新款动效 13</div></div><div class="vip-option" data-url="assets/member/new_svip_16.png"><img src="assets/member/new_svip_16.png" alt="新款动效 14"><div>新款动效 14</div></div><div class="vip-option" data-url="assets/member/new_svip_17.png"><img src="assets/member/new_svip_17.png" alt="新款动效 15"><div>新款动效 15</div></div><div class="vip-option" data-url="assets/member/new_svip_18.png"><img src="assets/member/new_svip_18.png" alt="新款动效 16"><div>新款动效 16</div></div><div class="vip-option" data-url="assets/member/new_svip_19.png"><img src="assets/member/new_svip_19.png" alt="新款动效 17"><div>新款动效 17</div></div><div class="vip-option" data-url="assets/member/new_svip_20.png"><img src="assets/member/new_svip_20.png" alt="新款动效 18"><div>新款动效 18</div></div><div class="vip-option" data-url="assets/member/new_svip_01.png"><img src="assets/member/new_svip_01.png" alt="新款动效 19"><div>新款动效 19</div></div><div class="vip-option" data-url="assets/member/new_svip_02.png"><img src="assets/member/new_svip_02.png" alt="新款动效 20"><div>新款动效 20</div></div><div class="vip-option" data-url="assets/member/new_svip_21.png"><img src="assets/member/new_svip_21.png" alt="新款动效 21"><div>新款动效 21</div></div></div></div>
+<div id="special-vip-expired" class="vip-category" style="display:none;">
+                    <div class="vip-category-title">VIP已过期状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="assets/proxy/c9094f2e24e1b834.png">
+                            <img src="assets/proxy/c9094f2e24e1b834.png" alt="v0">
+                            <div>v0</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/4bbf8c8ec656c1dd.png">
+                            <img src="assets/proxy/4bbf8c8ec656c1dd.png" alt="v1">
+                            <div>v1</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/c83f81cabd868405.png">
+                            <img src="assets/proxy/c83f81cabd868405.png" alt="v2">
+                            <div>v2</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/8bd054894d97ac75.png">
+                            <img src="assets/proxy/8bd054894d97ac75.png" alt="v3">
+                            <div>v3</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/b36a21a32197c1c0.png">
+                            <img src="assets/proxy/b36a21a32197c1c0.png" alt="v4">
+                            <div>v4</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/eaabe5fb4c47fc0a.png">
+                            <img src="assets/proxy/eaabe5fb4c47fc0a.png" alt="v5">
+                            <div>v5</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/2fe3cae05160e8de.png">
+                            <img src="assets/proxy/2fe3cae05160e8de.png" alt="v6">
+                            <div>v6</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/45498f3670c2e197.png">
+                            <img src="assets/proxy/45498f3670c2e197.png" alt="v7">
+                            <div>v7</div>
+                        </div>
+                    </div>
+                </div>
+<div id="special-vip-special" class="vip-category" style="display:none;">
+                    <div class="vip-category-title">VIP特殊状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="assets/proxy/88bad8cc242a5e3b.png">
+                            <img src="assets/proxy/88bad8cc242a5e3b.png" alt="即将过期">
+                            <div>即将过期</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/080aab8ff13753e1.png">
+                            <img src="assets/proxy/080aab8ff13753e1.png" alt="续费">
+                            <div>续费</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/c715808522aaaca6.png">
+                            <img src="assets/proxy/c715808522aaaca6.png" alt="开通">
+                            <div>开通</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/4e05fa00fa4282b7.png">
+                            <img src="assets/proxy/4e05fa00fa4282b7.png" alt="限免">
+                            <div>限免</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/f133b79fcbbcd9d2.png">
+                            <img src="assets/proxy/f133b79fcbbcd9d2.png" alt="注销">
+                            <div>注销</div>
+                        </div>
+                    </div>
+                </div>
+<div id="special-svip-expired" class="vip-category" style="display:none;">
+                    <div class="vip-category-title">SVIP已过期状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="assets/proxy/16e75d200d084a53.png">
+                            <img src="assets/proxy/16e75d200d084a53.png" alt="v0">
+                            <div>v0</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/c423ea5822d03c4b.png">
+                            <img src="assets/proxy/c423ea5822d03c4b.png" alt="v1">
+                            <div>v1</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/1ec4909efdb0dbda.png">
+                            <img src="assets/proxy/1ec4909efdb0dbda.png" alt="v2">
+                            <div>v2</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/b99e951c37f5f0d5.png">
+                            <img src="assets/proxy/b99e951c37f5f0d5.png" alt="v3">
+                            <div>v3</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/51adef5a64290d74.png">
+                            <img src="assets/proxy/51adef5a64290d74.png" alt="v4">
+                            <div>v4</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/8ae7dda3735bf75d.png">
+                            <img src="assets/proxy/8ae7dda3735bf75d.png" alt="v5">
+                            <div>v5</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/a5ad2b668950fd8d.png">
+                            <img src="assets/proxy/a5ad2b668950fd8d.png" alt="v6">
+                            <div>v6</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/917fe0c00aec421b.png">
+                            <img src="assets/proxy/917fe0c00aec421b.png" alt="v7">
+                            <div>v7</div>
+                        </div>
+                    </div>
+                </div>
+<div id="special-svip-special" class="vip-category" style="display:none;">
+                    <div class="vip-category-title">SVIP特殊状态</div>
+                    <div class="vip-options">
+                        <div class="vip-option" data-url="assets/proxy/c0a82f4e594ec084.png">
+                            <img src="assets/proxy/c0a82f4e594ec084.png" alt="即将过期">
+                            <div>即将过期</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/30a1566628ac4d0c.png">
+                            <img src="assets/proxy/30a1566628ac4d0c.png" alt="续费">
+                            <div>续费</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/31cbeb022ff2da0c.png">
+                            <img src="assets/proxy/31cbeb022ff2da0c.png" alt="开通">
+                            <div>开通</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/854f3e836c64dc9a.png">
+                            <img src="assets/proxy/854f3e836c64dc9a.png" alt="限免">
+                            <div>限免</div>
+                        </div>
+                        <div class="vip-option" data-url="assets/proxy/74cc5bb9060f41c2.png">
+                            <img src="assets/proxy/74cc5bb9060f41c2.png" alt="注销">
+                            <div>注销</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancel-btn">取消</button>
+                <button class="btn btn-primary" id="save-btn">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+
+        // 播放状态演示：动画暂停保留角度，再次播放接着旋转。
+        const miniPlayer = document.getElementById('mini-player');
+        const playToggle = document.getElementById('play-toggle');
+        const recordButton = document.getElementById('record-button');
+        function togglePlayer() {
+            const playing = miniPlayer.classList.toggle('is-playing');
+            [playToggle].forEach(button => {
+                button.setAttribute('aria-pressed', String(playing));
+                button.setAttribute('aria-label', playing ? '暂停' : '播放');
+            });
+        }
+        playToggle.addEventListener('click', togglePlayer);
+        recordButton.addEventListener('click', function() { openPlayerEditor('cover'); });
+        const queueToggle = document.getElementById('queue-toggle');
+        const playerQueue = document.getElementById('player-queue');
+        function closePlayerQueue() { playerQueue.hidden = true; queueToggle.setAttribute('aria-expanded', 'false'); }
+        queueToggle.addEventListener('click', function() {
+            playerQueue.hidden = !playerQueue.hidden;
+            queueToggle.setAttribute('aria-expanded', String(!playerQueue.hidden));
+        });
+        document.getElementById('queue-track').addEventListener('click', function() {
+            if (!miniPlayer.classList.contains('is-playing')) togglePlayer();
+            closePlayerQueue();
+        });
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.bottom-dock')) closePlayerQueue();
+        });
+        document.addEventListener('keydown', function(event) { if (event.key === 'Escape') closePlayerQueue(); });
+        document.querySelectorAll('.dock-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.dock-tab').forEach(item => { item.classList.remove('active'); item.removeAttribute('aria-current'); });
+                this.classList.add('active');
+                this.setAttribute('aria-current', 'page');
+                closePlayerQueue();
+            });
+        });
+
+
+        let playerData = { title: '爱笑的眼睛 (Smiling Eyes)', artist: '林俊杰', cover: '', duration: 210 };
+        let coverDraft = '';
+        let editMode = 'song';
+        let coverJob = 0;
+        const playerEditModal = document.getElementById('player-edit-modal');
+        const playerEditSave = document.getElementById('player-edit-save');
+        const playerEditStatus = document.getElementById('player-edit-status');
+        try {
+            const stored = JSON.parse(localStorage.getItem('musicPlayerData') || 'null');
+            if (stored && typeof stored.title === 'string') playerData.title = stored.title;
+            if (stored && Number.isFinite(Number(stored.duration)) && Number(stored.duration) > 0) playerData.duration = Math.min(7200, Number(stored.duration));
+            if (stored && typeof stored.artist === 'string') playerData.artist = stored.artist;
+            if (stored && typeof stored.cover === 'string' && stored.cover.startsWith('data:image/')) playerData.cover = stored.cover;
+        } catch (error) {}
+        function renderPlayerData() {
+            document.getElementById('track-title').textContent = playerData.title;
+            document.getElementById('track-artist').textContent = playerData.artist ? ' - ' + playerData.artist : '';
+            document.getElementById('queue-track').textContent = playerData.title + (playerData.artist ? ' - ' + playerData.artist : '');
+            const face = document.querySelector('.record-face');
+            face.classList.toggle('has-custom-cover', !!playerData.cover);
+            face.querySelector('.record-art').style.backgroundImage = playerData.cover ? 'url(' + JSON.stringify(playerData.cover) + ')' : 'none';
+        }
+        renderPlayerData();
+        let playerElapsed = 0;
+        let previousTick = performance.now();
+        function updateSongProgress() {
+            const fraction = Math.min(1, playerElapsed / playerData.duration);
+            document.getElementById('song-progress-ring').style.strokeDashoffset = String(84.823 * (1-fraction));
+            const format = n => Math.floor(n/60) + ':' + String(Math.floor(n%60)).padStart(2, '0');
+            playToggle.title = format(playerElapsed) + ' / ' + format(playerData.duration);
+        }
+        updateSongProgress();
+        setInterval(function() {
+            const now = performance.now();
+            if (miniPlayer.classList.contains('is-playing')) {
+                playerElapsed = (playerElapsed + (now-previousTick)/1000) % playerData.duration;
+                updateSongProgress();
+            }
+            previousTick = now;
+        }, 200);
+        function openPlayerEditor(mode) {
+            editMode = mode;
+            closePlayerQueue();
+            coverDraft = playerData.cover;
+            document.getElementById('song-title-input').value = playerData.title;
+            document.getElementById('song-artist-input').value = playerData.artist;
+            document.getElementById('song-duration-input').value = playerData.duration;
+            document.getElementById('song-edit-fields').hidden = mode !== 'song';
+            document.getElementById('cover-edit-fields').hidden = mode !== 'cover';
+            document.getElementById('player-edit-title').textContent = mode === 'song' ? '修改歌曲信息' : '修改唱片图片';
+            const coverPreview = document.getElementById('cover-preview');
+            coverPreview.style.backgroundImage = coverDraft ? 'url(' + JSON.stringify(coverDraft) + ')' : "url('yin.png')";
+            coverPreview.style.backgroundSize = coverDraft ? 'cover' : 'auto 145%';
+            coverPreview.style.backgroundPosition = coverDraft ? 'center' : '-17px center';
+            document.getElementById('record-upload').value = '';
+            playerEditStatus.textContent = '';
+            playerEditSave.disabled = false;
+            playerEditModal.style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+        function closePlayerEditor() {
+            coverJob++;
+            playerEditModal.style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+        document.getElementById('track-edit').addEventListener('click', function() { openPlayerEditor('song'); });
+        document.getElementById('player-edit-close').addEventListener('click', closePlayerEditor);
+        document.getElementById('player-edit-cancel').addEventListener('click', closePlayerEditor);
+        playerEditModal.addEventListener('click', function(event) { if(event.target === this) closePlayerEditor(); });
+        document.getElementById('record-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const job = ++coverJob;
+            if (file.type && !file.type.startsWith('image/')) { playerEditStatus.textContent = '请选择图片文件'; return; }
+            playerEditSave.disabled = true;
+            playerEditStatus.textContent = '正在处理图片…';
+            const reader = new FileReader();
+            function fail() { if(job !== coverJob) return; playerEditSave.disabled = false; playerEditStatus.textContent = '图片读取失败，请选择手机支持的 JPG 或 PNG 图片'; }
+            reader.onerror = fail;
+            reader.onload = function() {
+                const image = new Image();
+                image.onerror = fail;
+                image.onload = function() {
+                    if(job !== coverJob) return;
+                    try {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = canvas.height = 480;
+                        const ctx = canvas.getContext('2d');
+                        const side = Math.min(image.naturalWidth, image.naturalHeight);
+                        ctx.drawImage(image, (image.naturalWidth-side)/2, (image.naturalHeight-side)/2, side, side, 0, 0, 480, 480);
+                        coverDraft = canvas.toDataURL('image/jpeg', .85);
+                        document.getElementById('cover-preview').style.backgroundImage = 'url(' + JSON.stringify(coverDraft) + ')';
+                        document.getElementById('cover-preview').style.backgroundSize = 'cover';
+                        document.getElementById('cover-preview').style.backgroundPosition = 'center';
+                        playerEditStatus.textContent = '图片已就绪，点击保存生效';
+                        playerEditSave.disabled = false;
+                    } catch(error) { fail(); }
+                };
+                image.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        playerEditSave.addEventListener('click', function() {
+            const next = Object.assign({}, playerData);
+            if (editMode === 'song') {
+                next.title = document.getElementById('song-title-input').value.trim();
+                next.artist = document.getElementById('song-artist-input').value.trim();
+                next.duration = Number(document.getElementById('song-duration-input').value);
+                if (!Number.isFinite(next.duration) || next.duration < 1 || next.duration > 7200) { playerEditStatus.textContent = '歌曲时长请填写1–7200秒'; return; }
+                if (!next.title) { playerEditStatus.textContent = '请填写歌曲名称'; return; }
+            } else { next.cover = coverDraft; }
+            try { localStorage.setItem('musicPlayerData', JSON.stringify(next)); }
+            catch(error) { playerEditStatus.textContent = '保存失败，存储空间不足或不可用，请重试'; return; }
+            if (editMode === 'song') playerElapsed = 0;
+            playerData = next;
+            updateSongProgress();
+            renderPlayerData();
+            closePlayerEditor();
+        });
+
+        const defaults = {
+            music: [
+                {id:'liked',title:'我喜欢的音乐',subtitle:'0首',plays:'',tag:'',symbol:'heart',crop:{file:'neirong.png',x:48,y:140,size:153,w:1280,h:1964}},
+                {id:'rank',title:'听歌排行',subtitle:'累计听歌3首',plays:'',tag:'',symbol:'rank',crop:{file:'neirong.png',x:48,y:333,size:153,w:1280,h:1964}},
+                {id:'m1',title:'2025超火的网易云流行歌曲合集',subtitle:'337首',plays:'1478.6万次播放',tag:'根据新推荐',crop:{file:'neirong.png',x:48,y:1232,size:153,w:1280,h:1964}},
+                {id:'m2',title:'人生长恨水长东',subtitle:'321首',plays:'17.7万次播放',tag:'',crop:{file:'neirong.png',x:48,y:1430,size:153,w:1280,h:1964}},
+                {id:'m3',title:'如果你也喜欢奕迅',subtitle:'71首',plays:'2336.6万次播放',tag:'评论过千',crop:{file:'neirong.png',x:48,y:1626,size:153,w:1280,h:1964}},
+                {id:'m4',title:'人和人之间是一场仓促的骤雨',subtitle:'72首',plays:'56.8万次播放',tag:'',crop:{file:'neirong.png',x:48,y:1826,size:153,w:1280,h:1964}}
+            ],
+            podcast: [
+                {id:'p1',title:'DJ阿智 Remix (单曲集合)',subtitle:'欢迎收听',plays:'287300W次播放',tag:'remix',crop:{file:'neirong2.png',x:48,y:518,size:168,w:1280,h:1884}},
+                {id:'p2',title:'抖音2025热歌DJ',subtitle:'专属串烧定制+V：DJwl889 ✈TG:@DJwl889',plays:'81671W次播放',tag:'DJ舞曲',crop:{file:'neirong2.png',x:48,y:731,size:168,w:1280,h:1884}},
+                {id:'p3',title:'超燃音浪 | 车载dj最强音',subtitle:'每天更新全网最新的DJ热曲从抖音爆火的洗脑歌曲',plays:'10135W次播放',tag:'音乐故事',crop:{file:'neirong2.png',x:48,y:943,size:168,w:1280,h:1884}},
+                {id:'p4',title:'8d 环绕',subtitle:'一起转圈圈吧',plays:'10926W次播放',tag:'歌曲翻唱',crop:{file:'neirong2.png',x:48,y:1157,size:168,w:1280,h:1884}},
+                {id:'p5',title:'DJ阿衡 Remix (单曲集合)',subtitle:'欢迎各位收听',plays:'50992W次播放',tag:'DJ舞曲',crop:{file:'neirong2.png',x:48,y:1372,size:168,w:1280,h:1884}},
+                {id:'p6',title:'a文 广西包厢文化 FunkyHouse 精品…',subtitle:'定制串烧+V：DjLiuliu868699（备注来意）',plays:'7381W次播放',tag:'DJ舞曲',crop:{file:'neirong2.png',x:48,y:1585,size:168,w:1280,h:1884}}
+            ]
+        };
+        let libraryChanges = {};
+        try { const stored = JSON.parse(localStorage.getItem('musicLibraryData') || '{}'); if(stored && typeof stored === 'object' && !Array.isArray(stored)) libraryChanges = stored; } catch(error) {}
+        let createdPlaylists = Array.isArray(libraryChanges._createdPlaylists) ? libraryChanges._createdPlaylists.filter(row => row && row.customPlaylist === true && typeof row.id === 'string' && row.id.startsWith('custom-') && typeof row.title === 'string') : [];
+        let creatingPlaylist = false;
+        let playlistDeleteArmed = false;
+        let activeLibrary = 'music';
+        let musicLibraryLayout = 'list';
+        try { if (localStorage.getItem('musicLibraryLayout') === 'grid') musicLibraryLayout = 'grid'; } catch (error) {}
+        function toggleMusicLibraryLayout() {
+            musicLibraryLayout = musicLibraryLayout === 'grid' ? 'list' : 'grid';
+            try { localStorage.setItem('musicLibraryLayout', musicLibraryLayout); } catch (error) {}
+            renderLibrary('music');
+        }
+        let editingRow = null;
+        let libraryCoverDraft = '';
+        let libraryImageJob = 0;
+        const libraryModal = document.getElementById('library-edit-modal');
+        const librarySave = document.getElementById('library-edit-save');
+        const libraryStatus = document.getElementById('library-edit-status');
+        function currentRow(row) {
+            const saved = libraryChanges[row.id] || {};
+            const result = Object.assign({}, row);
+            ['title','subtitle','plays','tag','cover'].forEach(key=>{ if(typeof saved[key] === 'string') result[key] = saved[key]; });
+            return result;
+        }
+        function setLibraryCover(element, row, image) {
+            if(image && image.startsWith('data:image/')) {
+                element.style.backgroundImage = 'url(' + JSON.stringify(image) + ')';
+                element.style.backgroundSize = 'cover';element.style.backgroundPosition = 'center';
+            } else {
+                const c = row.crop;
+                if (!c) {
+                    const placeholder = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"><rect width="48" height="48" rx="4" fill="#e7e8ed"/><path d="M22 32V14l13-3v18M22 19l13-3" fill="none" stroke="#9699a5" stroke-width="2"/><ellipse cx="17" cy="33" rx="5" ry="3.5" fill="#9699a5"/><ellipse cx="30" cy="30" rx="5" ry="3.5" fill="#9699a5"/></svg>';
+                    element.style.backgroundImage = 'url("data:image/svg+xml,' + encodeURIComponent(placeholder) + '")';
+                    element.style.backgroundSize = 'cover'; element.style.backgroundPosition = 'center';
+                    return;
+                }
+                element.style.backgroundImage = 'url(' + JSON.stringify(c.file) + ')';
+                element.style.backgroundSize = (c.w/c.size*100)+'% auto';
+                element.style.backgroundPosition = (c.x/(c.w-c.size)*100)+'% '+(c.y/(c.h-c.size)*100)+'%';
+            }
+        }
+        const symbols = {
+            heart:'<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 28C6 21 2 16 4 10C6 4 12 4 16 8C20 4 26 4 28 10C30 16 26 21 16 28Z"/></svg>',
+            rank:'<svg viewBox="0 0 32 32" aria-hidden="true"><rect fill="currentColor" x="5" y="15" width="5" height="13" rx="2"/><rect fill="currentColor" x="13.5" y="5" width="5" height="23" rx="2"/><rect fill="currentColor" x="22" y="11" width="5" height="17" rx="2"/></svg>'
+        };
+        function renderLibrary(tab) {
+            activeLibrary = tab;
+            const root = document.getElementById('editable-library');
+            const oldDockFilters = document.querySelector('.tabs-dock .library-filters');
+            if (oldDockFilters) oldDockFilters.remove();
+            root.replaceChildren();
+            root.className = 'music-library ' + (tab==='podcast' ? 'podcast-library' : musicLibraryLayout === 'grid' ? 'library-grid' : '');
+            const filters = document.createElement('div');filters.className='library-filters';
+            if (tab === 'music') {
+                const recent = document.createElement('span');recent.className='library-filter-item';
+                recent.innerHTML='<svg class="library-lock" viewBox="0 0 16 20" aria-hidden="true"><path d="M4 8V5a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><rect x="2" y="8" width="12" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 12v2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+                recent.append(document.createTextNode('近期'));filters.append(recent);
+                [['创建',createdPlaylists.length,'created-count'],['收藏',6,'collection-count'],['专辑',1,'album-count']].forEach(([text,count,id])=>{
+                    const item=document.createElement('span');item.className='library-filter-item';item.append(document.createTextNode(text));
+                    const number=document.createElement('sup');number.className='library-filter-count';number.id=id;number.textContent=count;item.append(number);filters.append(item);
+                });
+                const tools=document.createElement('span');tools.className='library-filter-tools';
+                tools.innerHTML='<button type="button" class="library-layout-toggle" aria-label="切换列表或三列布局"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27H9a5 5 0 0 1-5-5V9a5 5 0 0 1 5-5h13a5 5 0 0 1 5 5v10M28 24H17m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button type="button" class="library-layout-toggle library-filter-more" aria-label="切换列表或三列布局"><svg viewBox="0 0 8 24" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="1.6"/><circle cx="4" cy="12" r="1.6"/><circle cx="4" cy="20" r="1.6"/></svg></button>';
+                tools.querySelectorAll('button').forEach(button => { button.setAttribute('aria-pressed', String(musicLibraryLayout === 'grid')); button.addEventListener('click', toggleMusicLibraryLayout); });
+                filters.append(tools);
+            } else { ['全部⁰','播客⁰','有声书⁰'].forEach(text=>{const span=document.createElement('span');span.textContent=text;filters.append(span);}); }
+            const filterAnchor = document.createElement('div');
+            filterAnchor.className = 'library-filter-anchor';
+            filterAnchor.setAttribute('aria-hidden','true');
+            root.append(filterAnchor, filters);
+            requestAnimationFrame(syncFiltersDock);
+            function action(text,icon,handler) {const line=document.createElement('div');line.className='library-action';const box=document.createElement('span');box.className='library-action-icon';if(icon==='import'){box.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M16 27H9a5 5 0 0 1-5-5V9a5 5 0 0 1 5-5h13a5 5 0 0 1 5 5v10M28 24H17m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';}else{box.textContent=icon;}line.append(box,document.createTextNode(text));if(handler){line.id='create-playlist';line.classList.add('is-interactive');line.setAttribute('role','button');line.tabIndex=0;line.addEventListener('click',handler);line.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();handler();}});}root.append(line);}
+            function heading(text) {const h=document.createElement('h3');h.className='library-heading';h.textContent=text;root.append(h);}
+            function addRow(original) {
+                const row=currentRow(original);
+                const line=document.createElement('div');line.className='library-row';line.dataset.rowId=row.id;
+                const cover=document.createElement('button');cover.type='button';cover.className='library-cover';cover.setAttribute('aria-label','修改'+row.title+'封面');setLibraryCover(cover,row,row.cover);
+                if(row.symbol){const overlay=document.createElement('span');overlay.className='cover-symbol';overlay.innerHTML=symbols[row.symbol];cover.append(overlay);}
+                const copy=document.createElement('button');copy.type='button';copy.className='library-copy';copy.setAttribute('aria-label','修改'+row.title+'信息');
+                const title=document.createElement('span');title.className='library-title';title.textContent=row.title;copy.append(title);
+                const subtitle=document.createElement('span');subtitle.className='library-subtitle';
+                if(tab==='music') {
+                    if(row.tag){const tag=document.createElement('span');tag.className='library-tag';tag.textContent=row.tag;subtitle.append(tag);}
+                    subtitle.append(document.createTextNode(row.customPlaylist ? [row.kind || '歌单', String(row.count || 0)+'首', row.owner || ''].filter(Boolean).join(' · ') : row.subtitle + (row.subtitle && row.plays ? ' · ' : '') + row.plays));
+                    copy.append(subtitle);
+                } else {
+                    subtitle.textContent=row.subtitle;copy.append(subtitle);
+                    if(row.plays || row.tag){const plays=document.createElement('span');plays.className='library-plays';if(row.tag){const tag=document.createElement('span');tag.className='library-tag';tag.textContent=row.tag;plays.append(tag);}plays.append(document.createTextNode(row.plays));copy.append(plays);}
+                }
+                cover.addEventListener('click',()=>openLibraryEditor(original));copy.addEventListener('click',()=>openLibraryEditor(original));
+                line.append(cover,copy);
+                if(row.id==='liked' || tab==='podcast') {const pill=document.createElement('span');pill.className='library-pill';if(row.id==='liked'){pill.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M15.5 27C7 21 2.8 16 4.3 10.4 5.5 5.8 11.3 4.9 15.5 9.3 17.1 7.6 19 6.6 20.8 6.5M26.3 15.9c-1.8 3.5-5.4 7-10.8 11.1" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/><path d="M25 2l1.7 4.3L31 8l-4.3 1.7L25 14l-1.7-4.3L19 8l4.3-1.7z" fill="currentColor"/></svg>';pill.append(document.createTextNode('心动模式'));}else{pill.innerHTML='<svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 4h12" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><rect x="6" y="10" width="20" height="18" rx="4" fill="currentColor"/><path d="M16 14v10M11 19h10" fill="none" stroke="#eceef3" stroke-width="2" stroke-linecap="round"/></svg>';pill.append(document.createTextNode('订阅'));}line.append(pill);}
+                if (row.customPlaylist) {
+                    const more=document.createElement('button');more.type='button';more.className='playlist-more';more.setAttribute('aria-label','编辑'+row.title);
+                    more.innerHTML='<svg viewBox="0 0 8 24" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="4" cy="20" r="1.5"/></svg>';
+                    more.addEventListener('click',()=>openLibraryEditor(original));line.append(more);
+                }
+                root.append(line);
+            }
+            if(tab==='music') {
+                defaults.music.slice(0,2).forEach(addRow);
+                createdPlaylists.forEach(addRow);
+                action('新建歌单','＋',openNewPlaylist);action('导入外部歌单','import');
+                const note=document.createElement('div');note.className='library-placeholder';note.textContent='展示创建/收藏的30条内容，该列表仅自己可见';root.append(note);
+                heading('你可能喜欢');defaults.music.slice(2).forEach(addRow);
+            } else {action('添加播客和有声书','＋');heading('为你推荐');defaults.podcast.forEach(addRow);}
+        }
+        function openNewPlaylist() {
+            const id = 'custom-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
+            openLibraryEditor({id, customPlaylist:true, title:'', kind:'歌单', count:0, owner:document.querySelector('#username .username-text').textContent, cover:''});
+            creatingPlaylist = true;
+            document.getElementById('library-edit-title').textContent = '新建歌单';
+        }
+        document.querySelector('.header-add-btn').addEventListener('click', openNewPlaylist);
+        function openLibraryEditor(original) {
+            creatingPlaylist = false;
+            const custom = !!original.customPlaylist;
+            playlistDeleteArmed = false;
+            document.getElementById('playlist-delete').hidden = !custom || !createdPlaylists.some(item=>item.id===original.id);
+            document.getElementById('playlist-delete').textContent = '删除歌单';
+            document.getElementById('library-edit-title').textContent = custom ? '编辑歌单' : '修改条目';
+            document.getElementById('playlist-fields').hidden = !custom;
+            ['subtitle','plays','tag'].forEach(key=>document.getElementById('library-'+key+'-input').closest('.form-group').hidden = custom);
+            if (custom) {
+                document.getElementById('playlist-type-input').value = original.kind || '歌单';
+                document.getElementById('playlist-count-input').value = original.count || 0;
+                document.getElementById('playlist-owner-input').value = original.owner || '';
+            }
+            editingRow = original;
+            const row = currentRow(original);
+            libraryCoverDraft = row.cover || '';
+            setLibraryCover(document.getElementById('library-cover-preview'),row,libraryCoverDraft);
+            ['title','subtitle','plays','tag'].forEach(key=>document.getElementById('library-'+key+'-input').value=row[key] || '');
+            document.getElementById('library-overlay-hint').textContent = row.symbol==='heart'?'爱心图标会继续显示在封面中央':row.symbol==='rank'?'三个竖条图标会继续显示在封面中央':'点击封面或文字均可编辑图片与内容';
+            document.getElementById('library-cover-upload').value='';libraryStatus.textContent='';librarySave.disabled=false;
+            libraryModal.style.display='block';document.body.classList.add('modal-open');
+        }
+        function closeLibraryEditor() {libraryImageJob++;libraryModal.style.display='none';document.body.classList.remove('modal-open');}
+        document.getElementById('library-edit-close').addEventListener('click',closeLibraryEditor);
+        document.getElementById('library-edit-cancel').addEventListener('click',closeLibraryEditor);
+        libraryModal.addEventListener('click',function(e){if(e.target===this)closeLibraryEditor();});
+        document.getElementById('library-cover-upload').addEventListener('change',function(event){
+            const file=event.target.files[0];if(!file)return;
+            const job=++libraryImageJob;
+            if(file.type && !file.type.startsWith('image/')){libraryStatus.textContent='请选择图片文件';return;}
+            librarySave.disabled=true;libraryStatus.textContent='正在处理图片…';
+            function fail(){if(job!==libraryImageJob)return;librarySave.disabled=false;libraryStatus.textContent='图片读取失败，请选择手机支持的 JPG 或 PNG 图片';}
+            const reader=new FileReader();reader.onerror=fail;
+            reader.onload=function(){const image=new Image();image.onerror=fail;image.onload=function(){
+                if(job!==libraryImageJob)return;
+                try{const canvas=document.createElement('canvas');canvas.width=canvas.height=480;const ctx=canvas.getContext('2d');const side=Math.min(image.naturalWidth,image.naturalHeight);ctx.drawImage(image,(image.naturalWidth-side)/2,(image.naturalHeight-side)/2,side,side,0,0,480,480);libraryCoverDraft=canvas.toDataURL('image/jpeg',.82);setLibraryCover(document.getElementById('library-cover-preview'),editingRow,libraryCoverDraft);librarySave.disabled=false;libraryStatus.textContent='图片已就绪，保存后生效';}catch(error){fail();}
+            };image.src=reader.result;};reader.readAsDataURL(file);
+        });
+        librarySave.addEventListener('click',function(){
+            const row={cover:libraryCoverDraft};['title','subtitle','plays','tag'].forEach(key=>row[key]=document.getElementById('library-'+key+'-input').value.trim());
+            if(!row.title){libraryStatus.textContent='请填写名称';return;}
+            let playlists = createdPlaylists;
+            let next;
+            if (editingRow.customPlaylist) {
+                const count = Number(document.getElementById('playlist-count-input').value);
+                if (!Number.isSafeInteger(count) || count < 0 || count > 1000000) { libraryStatus.textContent='歌曲数量请填写0–1000000之间的整数'; return; }
+                const playlist = {id:editingRow.id, customPlaylist:true, title:row.title, cover:row.cover, kind:document.getElementById('playlist-type-input').value.trim() || '歌单', count, owner:document.getElementById('playlist-owner-input').value.trim()};
+                playlists = creatingPlaylist ? createdPlaylists.concat(playlist) : createdPlaylists.map(item=>item.id===playlist.id ? playlist : item);
+                next = Object.assign({},libraryChanges,{_createdPlaylists:playlists});
+            } else { next=Object.assign({},libraryChanges,{[editingRow.id]:row}); }
+            try{localStorage.setItem('musicLibraryData',JSON.stringify(next));}catch(error){libraryStatus.textContent='保存失败，存储空间不足或不可用，请尝试较小图片';return;}
+            libraryChanges=next;createdPlaylists=playlists;
+            if (editingRow.customPlaylist) {
+                document.querySelectorAll('.tab-item').forEach(item=>item.classList.toggle('active',item.id==='music-tab'));
+                document.getElementById('editable-library').hidden=false;document.getElementById('content-img').hidden=true;
+                document.getElementById('notes-feed').hidden=true;document.getElementById('note-compose').hidden=true;
+                activeLibrary='music';
+            }
+            renderLibrary(activeLibrary);closeLibraryEditor();
+        });
+        document.getElementById('playlist-delete').addEventListener('click',function() {
+            if (!editingRow || !editingRow.customPlaylist || !createdPlaylists.some(item=>item.id===editingRow.id)) return;
+            if (!playlistDeleteArmed) { playlistDeleteArmed=true;this.textContent='确认删除';libraryStatus.textContent='删除后无法恢复，再次点击确认删除';return; }
+            const playlists=createdPlaylists.filter(item=>item.id!==editingRow.id);
+            const next=Object.assign({},libraryChanges,{_createdPlaylists:playlists});
+            delete next[editingRow.id];
+            try {localStorage.setItem('musicLibraryData',JSON.stringify(next));} catch(error) {libraryStatus.textContent='删除失败，暂时无法保存，请重试';return;}
+            libraryChanges=next;createdPlaylists=playlists;renderLibrary('music');closeLibraryEditor();
+        });
+        renderLibrary('music');
+
+        let profileNotes = [];
+        try { const stored=JSON.parse(localStorage.getItem('musicProfileNotes') || '[]');if(Array.isArray(stored))profileNotes=stored.filter(note=>note && typeof note.id==='string' && typeof note.content==='string'); } catch(error) {}
+        const notesFeed=document.getElementById('notes-feed');
+        const noteModal=document.getElementById('note-edit-modal');
+        const noteStatus=document.getElementById('note-edit-status');
+        let editingNoteId=null;
+        let noteDeleteArmed=false;
+        const noteIcons={
+            share:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9M12 12q0-6 7-6m-3-3 3 3-3 3"/></svg>',
+            comments:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20v-5.2A8.6 8.6 0 1 1 11.6 20zM8 8.5h8M8 12.5h5"/></svg>',
+            likes:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 20V10l3.3-2.4V4.2c0-3 3.6-2.4 3.6 0v5h4.3c2 0 2.6 1.4 2.1 3.1l-1.2 5.8c-.3 1.4-1.2 2-2.6 2H8z"/><rect x="3" y="10" width="4" height="10" rx="1.3"/></svg>',
+            more:'<svg viewBox="0 0 8 24" fill="currentColor"><circle cx="4" cy="4" r="1.5"/><circle cx="4" cy="12" r="1.5"/><circle cx="4" cy="20" r="1.5"/></svg>'
+        };
+        function renderNotes() {
+            notesFeed.replaceChildren();
+            const top=document.createElement('div');top.className='notes-top';
+            top.innerHTML='<span class="notes-play-symbol"><svg viewBox="0 0 24 24"><path d="m8 4 12 8-12 8z" fill="white"/></svg></span><div>播放全部<span class="notes-total"></span></div><svg class="notes-grid" viewBox="0 0 20 20" fill="none" stroke="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="12" y="1" width="6" height="6" rx="1"/><rect x="1" y="12" width="6" height="6" rx="1"/><rect x="12" y="12" width="6" height="6" rx="1"/></svg>';
+            top.querySelector('.notes-total').textContent=profileNotes.length+'篇笔记';notesFeed.append(top);
+            const name=document.querySelector('#username .username-text').textContent;
+            const avatar=document.getElementById('avatar-img').src;
+            const vip=document.getElementById('vip-img').src;
+            profileNotes.forEach(note=>{
+                const card=document.createElement('article');card.className='note-card';card.dataset.noteId=note.id;
+                const profile=document.createElement('div');profile.className='note-profile';
+                const photo=document.createElement('img');photo.className='note-avatar';photo.src=avatar;photo.alt='用户头像';
+                const info=document.createElement('div');info.className='note-author-info';
+                const author=document.createElement('div');author.className='note-author-line';
+                const username=document.createElement('span');username.className='note-author-name';username.textContent=name;
+                const badge=document.createElement('img');badge.className='note-vip';badge.src=vip;badge.alt='VIP';badge.addEventListener('error',()=>{badge.hidden=true;});
+                author.append(username,badge);const time=document.createElement('div');time.className='note-time';time.textContent=note.time || '刚刚';info.append(author,time);profile.append(photo,info);
+                const body=document.createElement('div');body.className='note-body';body.textContent=note.content;
+                body.tabIndex=0;body.setAttribute('role','button');body.setAttribute('aria-label','编辑或删除这篇笔记');
+                body.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openNoteEditor(note.id);}});
+                card.addEventListener('click',event=>{if(!event.target.closest('button'))openNoteEditor(note.id);});
+                const actions=document.createElement('div');actions.className='note-actions';
+                [['share','分享'],['comments',note.comments ? String(note.comments) : '评论'],['likes',note.likes ? String(note.likes) : '赞'],['more','']].forEach(([kind,label])=>{
+                    const button=document.createElement('button');button.type='button';button.className='note-'+kind;button.innerHTML=noteIcons[kind];button.append(document.createTextNode(label));button.setAttribute('aria-label',kind==='more'?'编辑笔记':kind==='comments'?'编辑评论数量':kind==='likes'?'编辑赞的数量':'分享笔记');
+                    button.addEventListener('click',async()=>{
+                        if(kind!=='share'){openNoteEditor(note.id);return;}
+                        try {
+                            if(navigator.share) await navigator.share({title:name+'的笔记',text:note.content});
+                            else if(navigator.clipboard) {await navigator.clipboard.writeText(note.content);document.getElementById('notes-feedback').textContent='笔记文案已复制';}
+                            else {openNoteEditor(note.id);noteStatus.textContent='可以选择并复制笔记文案';}
+                        } catch(error) {if(error.name!=='AbortError'){openNoteEditor(note.id);noteStatus.textContent='可以选择并复制笔记文案';}}
+                    });actions.append(button);
+                });card.append(profile,body,actions);notesFeed.append(card);
+            });
+            const end=document.createElement('div');end.className='notes-end';end.textContent=profileNotes.length?'已经刷到底啦':'还没有笔记，点击右下角 + 发布第一篇';notesFeed.append(end);
+            const feedback=document.createElement('div');feedback.id='notes-feedback';feedback.className='notes-end';feedback.setAttribute('role','status');notesFeed.append(feedback);
+        }
+        function openNoteEditor(id) {
+            editingNoteId=id || null;noteDeleteArmed=false;
+            const note=profileNotes.find(item=>item.id===id) || {time:'刚刚',content:'',comments:0,likes:0};
+            document.getElementById('note-edit-title').textContent=id?'编辑笔记':'发布笔记';
+            document.getElementById('note-edit-save').textContent=id?'保存':'发布';
+            ['time','content','comments','likes'].forEach(key=>document.getElementById('note-'+key+'-input').value=note[key] || (key==='time'?'刚刚':key==='content'?'':0));
+            document.getElementById('note-delete').hidden=!id;document.getElementById('note-delete').textContent='删除笔记';noteStatus.textContent=id?'可修改内容，或点击底部“删除笔记”':'';
+            noteModal.style.display='block';document.body.classList.add('modal-open');
+        }
+        function closeNoteEditor() {noteModal.style.display='none';document.body.classList.remove('modal-open');}
+        function saveNotes(next) {
+            try {localStorage.setItem('musicProfileNotes',JSON.stringify(next));} catch(error) {noteStatus.textContent='保存失败，请重试或缩短文案';return false;}
+            profileNotes=next;renderNotes();closeNoteEditor();return true;
+        }
+        document.getElementById('note-compose').addEventListener('click',()=>openNoteEditor());
+        document.getElementById('note-edit-close').addEventListener('click',closeNoteEditor);
+        document.getElementById('note-edit-cancel').addEventListener('click',closeNoteEditor);
+        noteModal.addEventListener('click',event=>{if(event.target===noteModal)closeNoteEditor();});
+        document.getElementById('note-edit-save').addEventListener('click',()=>{
+            const content=document.getElementById('note-content-input').value.trim();
+            const comments=Number(document.getElementById('note-comments-input').value),likes=Number(document.getElementById('note-likes-input').value);
+            if(!content){noteStatus.textContent='请填写笔记文案';return;}
+            if(![comments,likes].every(value=>Number.isSafeInteger(value)&&value>=0&&value<=999999999)){noteStatus.textContent='评论和赞的数量请填写0–999999999之间的整数';return;}
+            const note={id:editingNoteId || 'note-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,9),time:document.getElementById('note-time-input').value.trim() || '刚刚',content,comments,likes};
+            saveNotes(editingNoteId?profileNotes.map(item=>item.id===editingNoteId?note:item):[note,...profileNotes]);
+        });
+        document.getElementById('note-delete').addEventListener('click',function(){
+            if(!editingNoteId)return;
+            if(!noteDeleteArmed){noteDeleteArmed=true;this.textContent='确认删除';noteStatus.textContent='再次点击确认删除这篇笔记';return;}
+            saveNotes(profileNotes.filter(note=>note.id!==editingNoteId));
+        });
+        const notesProfileObserver=new MutationObserver(()=>{if(!notesFeed.hidden)renderNotes();});
+        notesProfileObserver.observe(document.getElementById('username'),{childList:true,subtree:true,characterData:true});
+        ['avatar-img','vip-img'].forEach(id=>notesProfileObserver.observe(document.getElementById(id),{attributes:true,attributeFilter:['src']}));
+        let savedGender = 'male';
+        function applyGender(value) {
+            savedGender = value === 'female' ? 'female' : 'male';
+            const icon = document.getElementById('profile-gender-icon');
+            icon.setAttribute('stroke', savedGender === 'female' ? '#cf82a5' : '#58b6d5');
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', savedGender === 'female' ? '15' : '9');
+            circle.setAttribute('cy', savedGender === 'female' ? '8' : '15');
+            circle.setAttribute('r', '6');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', savedGender === 'female' ? 'M10.5 12.5 2 21M2 15l6 6' : 'M13.5 10.5 23 1M16 1h7v7');
+            icon.replaceChildren(circle, path);
+            icon.closest('svg').setAttribute('aria-label', (savedGender === 'female' ? '女生' : '男生') + '性别与徽章');
+            document.getElementById('gender-input').value = savedGender;
+        }
+        function applySignature(value) {
+            const signature = typeof value === 'string' ? value.trim().slice(0, 80) : '';
+            document.getElementById('profile-signature').textContent = signature;
+            document.getElementById('signature-input').value = signature;
+            document.documentElement.classList.toggle('has-profile-signature', !!signature);
+            requestAnimationFrame(function() { measureCollapsedHeader(); updateCollapsedHeader(window.scrollY); });
+        }
+        let savedBackground = '';
+        let draftBackground = '';
+        let savedBackgroundMode = 'top';
+        let backgroundRequest = 0;
+        // 分析当前 cover 裁切后的图片；只在换图、切换范围或尺寸变化时采样。
+        let backgroundImageCache = null;
+        let backgroundRenderRequest = 0;
+        let previewRenderRequest = 0;
+        function backgroundStyle(image, stops) {
+            if (!image) return 'none';
+            const url = 'url(' + JSON.stringify(image) + ')';
+            return stops ? 'linear-gradient(to bottom,' + stops.join(',') + '),' + url : url;
+        }
+        function loadBackgroundImage(source) {
+            if (backgroundImageCache && backgroundImageCache.source === source) return backgroundImageCache.promise;
+            const promise = new Promise(function(resolve, reject) {
+                const image = new Image();
+                image.onload = function() { resolve(image); };
+                image.onerror = reject;
+                image.src = source;
+            });
+            backgroundImageCache = {source: source, promise: promise};
+            return promise;
+        }
+        function adaptiveBackgroundStyle(source, mode) {
+            if (!source) return Promise.resolve('none');
+            return loadBackgroundImage(source).then(function(image) {
+                const header = document.querySelector('.header');
+                const width = document.documentElement.clientWidth || window.innerWidth;
+                const headerHeight = header.offsetHeight;
+                const height = mode === 'full' ? document.querySelector('.fullscreen-wallpaper').offsetHeight || window.innerHeight : headerHeight;
+                // 与 CSS 的 center top / cover 一致，避免把屏幕外的亮部也算进去。
+                const scale = Math.max(width / image.naturalWidth, height / image.naturalHeight);
+                const cropWidth = width / scale, cropHeight = height / scale;
+                const canvas = document.createElement('canvas');
+                canvas.width = 72; canvas.height = 144;
+                const context = canvas.getContext('2d', {willReadFrequently: true});
+                context.fillStyle = '#000'; context.fillRect(0, 0, 72, 144);
+                context.drawImage(image, (image.naturalWidth - cropWidth) / 2, 0, cropWidth, cropHeight, 0, 0, 72, 144);
+                const pixels = context.getImageData(0, 0, 72, 144).data;
+                // 12 个区域取较亮部分的亮度，保护文字，同时避免少量高光压暗整张图。
+                const stops = [];
+                for (let band = 0; band < 12; band++) {
+                    const values = [];
+                    for (let y = band * 12; y < (band + 1) * 12; y++) {
+                        for (let x = 0; x < 72; x++) {
+                            const i = (y * 72 + x) * 4;
+                            const linear = function(v) { v /= 255; return v <= .04045 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); };
+                            const luminance = .2126 * linear(pixels[i]) + .7152 * linear(pixels[i + 1]) + .0722 * linear(pixels[i + 2]);
+                            values.push(luminance <= .0031308 ? luminance * 12.92 : 1.055 * Math.pow(luminance, 1 / 2.4) - .055);
+                        }
+                    }
+                    values.sort(function(a, b) { return a - b; });
+                    const brightness = values[Math.floor(values.length * .85)];
+                    // 仅顶部模式更明亮；全屏模式保持原有自动亮度与内容区分层。
+                    const center = (band + .5) / 12;
+                    const target = mode === 'top' ? .60 : center * height > headerHeight ? .50 : .55;
+                    const opacity = Math.max(0, 1 - target / Math.max(.001, brightness));
+                    const color = 'rgba(0,0,0,' + opacity.toFixed(3) + ')';
+                    if (band === 0) stops.push(color + ' 0%');
+                    stops.push(color + ' ' + (center * 100).toFixed(2) + '%');
+                    if (band === 11) stops.push(color + ' 100%');
+                }
+                return backgroundStyle(source, stops);
+            }).catch(function() {
+                // 图片无法采样时保留原图，不套用固定深色遮罩。
+                return backgroundStyle(source);
+            });
+        }
+        function applyBackground(image, mode) {
+            savedBackgroundMode = mode === 'full' ? 'full' : 'top';
+            const changed = savedBackground !== (image || '');
+            savedBackground = image || '';
+            const request = ++backgroundRenderRequest;
+            document.documentElement.classList.toggle('has-full-background', !!savedBackground && savedBackgroundMode === 'full');
+            if (changed || !savedBackground) document.documentElement.style.setProperty('--profile-background', backgroundStyle(savedBackground));
+            document.querySelector('.header').classList.toggle('has-background', !!savedBackground);
+            adaptiveBackgroundStyle(savedBackground, savedBackgroundMode).then(function(style) {
+                if (request === backgroundRenderRequest) document.documentElement.style.setProperty('--profile-background', style);
+            });
+        }
+        function previewBackground() {
+            const request = ++previewRenderRequest;
+            const preview = document.getElementById('background-preview');
+            preview.style.backgroundImage = backgroundStyle(draftBackground);
+            adaptiveBackgroundStyle(draftBackground, document.getElementById('background-mode').value).then(function(style) {
+                if (request === previewRenderRequest) preview.style.backgroundImage = style;
+            });
+        }
+        document.getElementById('background-mode').addEventListener('change', previewBackground);
+        let backgroundResizeTimer;
+        window.addEventListener('resize', function() {
+            clearTimeout(backgroundResizeTimer);
+            backgroundResizeTimer = setTimeout(function() {
+                if (savedBackground) applyBackground(savedBackground, savedBackgroundMode);
+            }, 150);
+        });
+        function openEditModal() {
+            loadFromStorage();
+            document.getElementById('gender-input').value = savedGender;
+            document.getElementById('avatar-upload').value = '';
+            document.getElementById('avatar-selection').textContent = '未选择图片';
+            document.getElementById('background-selection').textContent = '未选择图片';
+            draftBackground = savedBackground;
+            document.getElementById('background-mode').value = savedBackgroundMode;
+            previewBackground();
+            document.getElementById('background-upload').value = '';
+            document.getElementById('background-status').textContent = '';
+            document.getElementById('editModal').style.display = 'block';
+            document.body.classList.add('modal-open');
+        }
+        function closeEditModal() {
+            backgroundRequest++;
+            document.getElementById('save-btn').disabled = false;
+            document.getElementById('editModal').style.display = 'none';
+            document.body.classList.remove('modal-open');
+        }
+        document.getElementById('avatar').addEventListener('click', openEditModal);
+        document.querySelector('.more-btn').addEventListener('click', openEditModal);
+        document.getElementById('closeModal').addEventListener('click', closeEditModal);
+        document.getElementById('cancel-btn').addEventListener('click', closeEditModal);
+        document.getElementById('editModal').addEventListener('click', function(event) {
+            if (event.target === this) closeEditModal();
+        });
+        document.getElementById('background-reset').addEventListener('click', function() {
+            backgroundRequest++;
+            draftBackground = '';
+            document.getElementById('background-selection').textContent = '未选择图片';
+            document.getElementById('save-btn').disabled = false;
+            document.getElementById('background-upload').value = '';
+            document.getElementById('background-status').textContent = '保存后恢复默认背景';
+            previewBackground();
+        });
+        document.getElementById('background-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const request = ++backgroundRequest;
+            const status = document.getElementById('background-status');
+            const save = document.getElementById('save-btn');
+            if (file.type && !file.type.startsWith('image/')) {
+                status.textContent = '请选择图片文件';
+                this.value = '';
+                return;
+            }
+            save.disabled = true;
+            status.textContent = '正在处理图片…';
+            const reader = new FileReader();
+            function fail() {
+                if (request !== backgroundRequest) return;
+                save.disabled = false;
+                status.textContent = '图片读取失败，请选择 JPG、PNG 或其他手机支持的图片';
+            }
+            reader.onerror = fail;
+            reader.onload = function() {
+                const img = new Image();
+                img.onerror = fail;
+                img.onload = function() {
+                    if (request !== backgroundRequest) return;
+                    try {
+                        const scale = Math.min(1, 1440 / Math.max(img.naturalWidth, img.naturalHeight));
+                        const canvas = document.createElement('canvas');
+                        canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+                        canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+                        const context = canvas.getContext('2d');
+                        context.fillStyle = '#000';
+                        context.fillRect(0, 0, canvas.width, canvas.height);
+                        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        draftBackground = canvas.toDataURL('image/jpeg', 0.82);
+                        previewBackground();
+                        status.textContent = '图片已就绪，点击保存生效';
+                        save.disabled = false;
+                    } catch (error) { fail(); }
+                };
+                img.src = reader.result;
+            };
+            reader.readAsDataURL(file);
+        });
+        // 固定顶部栏在主资料名称滑出时渐显，并共享资料数据。
+        const collapsedBar = document.getElementById('collapsed-profile-bar');
+        const collapsedName = document.getElementById('collapsed-profile-name');
+        const collapsedAvatar = document.getElementById('collapsed-profile-avatar');
+        const tabHeader = document.querySelector('.tab-header');
+        const tabAnchor = document.getElementById('tab-dock-anchor');
+        const tabsDock = document.getElementById('tabs-dock');
+        let tabsDocked = false;
+        let tabsDockThreshold = Infinity;
+        function syncFiltersDock() {
+            const root = document.getElementById('editable-library');
+            const anchor = root.querySelector('.library-filter-anchor');
+            const filters = tabsDock.querySelector('.library-filters') || root.querySelector('.library-filters');
+            if (!anchor || !filters) return;
+            if (tabsDocked && !root.hidden) {
+                anchor.style.height = filters.offsetHeight + 'px';
+                anchor.classList.add('is-docked');
+                if (filters.parentElement !== tabsDock) tabsDock.append(filters);
+            } else {
+                if (filters.parentElement === tabsDock) anchor.after(filters);
+                anchor.style.height = '0px';
+                anchor.classList.remove('is-docked');
+            }
+        }
+        function syncTabsDock(position) {
+            const shouldDock = position >= tabsDockThreshold;
+            if (shouldDock === tabsDocked) { syncFiltersDock(); return; }
+            tabsDocked = shouldDock;
+            if (shouldDock) {
+                tabAnchor.style.height = tabHeader.offsetHeight + 'px';
+                tabsDock.append(tabHeader);
+                tabsDock.hidden = false;
+            } else {
+                tabAnchor.after(tabHeader);
+                tabAnchor.style.height = '0px';
+                tabsDock.hidden = true;
+            }
+            document.documentElement.classList.toggle('tabs-are-docked', shouldDock);
+            syncFiltersDock();
+        }
+        let collapsedStart = 100;
+        let collapsedOpacity = -1;
+        let collapsedFrame = 0;
+        function measureCollapsedHeader() {
+            const name = document.getElementById('username');
+            const safeTop = parseFloat(getComputedStyle(collapsedBar).paddingTop) || 0;
+            collapsedStart = Math.max(0, name.offsetTop + name.offsetHeight - safeTop - 48);
+            tabsDockThreshold = Math.max(0, tabAnchor.getBoundingClientRect().top + window.scrollY - safeTop - 48);
+            if (tabsDocked) tabAnchor.style.height = tabHeader.offsetHeight + 'px';
+        }
+        function updateCollapsedHeader(position) {
+            syncTabsDock(position);
+            const opacity = Math.max(0, Math.min(1, (position - collapsedStart) / 48));
+            if (opacity === collapsedOpacity) return;
+            collapsedOpacity = opacity;
+            collapsedBar.style.opacity = opacity.toFixed(3);
+            const visible = opacity >= .95;
+            collapsedBar.classList.toggle('is-visible', visible);
+            collapsedBar.setAttribute('aria-hidden', String(!visible));
+            collapsedBar.inert = !visible;
+        }
+        function syncCollapsedProfile() {
+            collapsedName.textContent = document.querySelector('#username .username-text').textContent;
+            collapsedAvatar.src = document.getElementById('avatar-img').src;
+        }
+        new MutationObserver(syncCollapsedProfile).observe(document.getElementById('avatar-img'), {attributes: true, attributeFilter: ['src']});
+        collapsedBar.addEventListener('click', function(event) {
+            const button = event.target.closest('[data-profile-action]');
+            if (button) document.querySelector(button.dataset.profileAction).click();
+        });
+        window.addEventListener('scroll', function() {
+            if (collapsedFrame) return;
+            collapsedFrame = requestAnimationFrame(function() {
+                collapsedFrame = 0;
+                updateCollapsedHeader(scrollPhase === 'drag' ? scrollTarget : window.scrollY);
+            });
+        }, {passive: true});
+        window.addEventListener('resize', function() { measureCollapsedHeader(); updateCollapsedHeader(window.scrollY); }, {passive: true});
+        window.addEventListener('DOMContentLoaded', function() { syncCollapsedProfile(); measureCollapsedHeader(); updateCollapsedHeader(window.scrollY); });
+        // 保留整页布局：按住时使用合成层跟手，松手后衔接现有惯性。
+        const pageScroll = document.getElementById('page-scroll');
+        let scrollFrame = 0;
+        let scrollPhase = 'idle';
+        let scrollTarget = 0;
+        let scrollLimit = 0;
+        let dragOrigin = 0;
+        let dragTranslated = false;
+        let lastWritten = 0;
+        let touchY = 0;
+        let gestureStartY = 0;
+        let gestureStartX = 0;
+        let touchTime = 0;
+        let frameTime = 0;
+        let scrollSpeed = 0;
+        let gestureMoved = false;
+        let singleTouch = false;
+        let speedSamples = [];
+        function commitDragPosition() {
+            if (!dragTranslated) return;
+            // 同一帧内撤去临时平移并提交位置，保持内容的视觉位置一致。
+            pageScroll.style.removeProperty('transform');
+            pageScroll.classList.remove('is-touch-dragging');
+            dragTranslated = false;
+            const next = Math.round(scrollTarget);
+            window.scrollTo(0, next);
+            lastWritten = next;
+        }
+        function stopScrollMomentum() {
+            commitDragPosition();
+            if (scrollFrame) cancelAnimationFrame(scrollFrame);
+            scrollFrame = 0;
+            scrollPhase = 'idle';
+            scrollSpeed = 0;
+        }
+        function clampPageScroll(value) {
+            return Math.max(0, Math.min(scrollLimit, value));
+        }
+        function scheduleScrollFrame() {
+            if (!scrollFrame) scrollFrame = requestAnimationFrame(renderScrollFrame);
+        }
+        function renderScrollFrame(time) {
+            scrollFrame = 0;
+            if (document.body.classList.contains('modal-open') || document.hidden) {
+                stopScrollMomentum();
+                return;
+            }
+            updateCollapsedHeader(scrollTarget);
+            if (scrollPhase === 'drag') {
+                // 手指按住期间只移动合成层，不反复写入文档滚动位置。
+                pageScroll.classList.add('is-touch-dragging');
+                pageScroll.style.transform = 'translate3d(0,' + (dragOrigin - Math.round(scrollTarget)) + 'px,0)';
+                dragTranslated = true;
+                return;
+            }
+            commitDragPosition();
+            if (scrollPhase === 'coast') {
+                const dt = Math.min(32, Math.max(0, time - frameTime));
+                const decay = Math.exp(-dt / 170);
+                scrollTarget = clampPageScroll(scrollTarget + scrollSpeed * 170 * (1 - decay));
+                scrollSpeed *= decay;
+                updateCollapsedHeader(scrollTarget);
+                frameTime = time;
+                if (scrollTarget <= 0 || scrollTarget >= scrollLimit || Math.abs(scrollSpeed) < .025) {
+                    scrollPhase = 'idle';
+                    scrollSpeed = 0;
+                }
+            }
+            const next = Math.round(scrollTarget);
+            if (next !== lastWritten) {
+                window.scrollTo(0, next);
+                lastWritten = next;
+            }
+            if (scrollPhase === 'coast') scheduleScrollFrame();
+        }
+        pageScroll.addEventListener('touchstart', function(event) {
+            stopScrollMomentum();
+            singleTouch = event.touches.length === 1 && !document.body.classList.contains('modal-open');
+            gestureMoved = false;
+            speedSamples = [];
+            if (!singleTouch) return;
+            const scrolling = document.scrollingElement || document.documentElement;
+            // 每次手势只读取一次边界，避免滑动时反复触发布局计算。
+            scrollLimit = Math.max(0, scrolling.scrollHeight - window.innerHeight);
+            scrollTarget = clampPageScroll(window.scrollY);
+            lastWritten = Math.round(window.scrollY);
+            dragOrigin = window.scrollY;
+            touchY = gestureStartY = event.touches[0].clientY;
+            gestureStartX = event.touches[0].clientX;
+            touchTime = performance.now();
+            scrollPhase = 'drag';
+        }, {passive: true});
+        pageScroll.addEventListener('touchmove', function(event) {
+            if (!singleTouch || event.touches.length !== 1) { singleTouch = false; stopScrollMomentum(); return; }
+            if (document.body.classList.contains('modal-open')) { stopScrollMomentum(); return; }
+            const y = event.touches[0].clientY;
+            const now = performance.now();
+            if (!gestureMoved) {
+                const dy = Math.abs(y - gestureStartY);
+                const dx = Math.abs(event.touches[0].clientX - gestureStartX);
+                if (dy < 4 || dy <= dx) return;
+                gestureMoved = true;
+            }
+            if (event.cancelable) event.preventDefault();
+            const previous = scrollTarget;
+            scrollTarget = clampPageScroll(scrollTarget + touchY - y);
+            const delta = scrollTarget - previous;
+            if (speedSamples.length && delta * speedSamples[speedSamples.length - 1].delta < 0) speedSamples = [];
+            speedSamples.push({start: touchTime, end: now, delta});
+            speedSamples = speedSamples.filter(sample => sample.end >= now - 90);
+            if (scrollTarget === 0 || scrollTarget === scrollLimit) speedSamples = [];
+            touchY = y;
+            touchTime = now;
+            scheduleScrollFrame();
+        }, {passive: false});
+        pageScroll.addEventListener('touchend', function(event) {
+            if (!singleTouch || event.touches.length) { singleTouch = false; stopScrollMomentum(); return; }
+            singleTouch = false;
+            if (!gestureMoved) { stopScrollMomentum(); return; }
+            if (event.cancelable) event.preventDefault();
+            const now = performance.now();
+            const elapsed = speedSamples.length ? Math.max(24, touchTime - speedSamples[0].start) : 1;
+            const distance = speedSamples.reduce((sum, sample) => sum + sample.delta, 0);
+            scrollSpeed = now - touchTime < 90 ? Math.max(-1.8, Math.min(1.8, distance / elapsed)) : 0;
+            scrollPhase = Math.abs(scrollSpeed) >= .025 ? 'coast' : 'idle';
+            frameTime = now;
+            // 即使没有惯性，也提交最后一次拖动的位置。
+            scheduleScrollFrame();
+        }, {passive: false});
+        pageScroll.addEventListener('touchcancel', function() { singleTouch = false; stopScrollMomentum(); }, {passive: true});
+        window.addEventListener('resize', function() { singleTouch = false; stopScrollMomentum(); }, {passive: true});
+        document.addEventListener('visibilitychange', function() { if (document.hidden) stopScrollMomentum(); });
+        document.addEventListener('click', function(event) {
+            if (event.target.closest('button, .avatar, .more-btn, .tab-item')) stopScrollMomentum();
+        }, true);
+        function setUsername(value) {
+            const name = document.getElementById('username');
+            const vip = name.querySelector('.vip');
+            const text = document.createElement('span');
+            text.className = 'username-text';
+            text.textContent = value;
+            name.replaceChildren(text, vip);
+            collapsedName.textContent = value;
+        }
+
+        // 上传头像预览
+        document.getElementById('avatar-upload').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    document.getElementById('avatar-preview').src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        
+        // VIP类型切换
+        document.getElementById('vip-type').addEventListener('change', function() {
+            const type = this.value;
+            
+            // 隐藏所有VIP选项
+            document.querySelectorAll('.vip-category').forEach(el => {
+                el.style.display = 'none';
+            });
+            
+            const groups = {
+                vip: ['vip-normal','vip-animated'],
+                svip: ['svip-normal','svip-animated','svip-new-animated'],
+                special: ['special-vip-expired','special-vip-special','special-svip-expired','special-svip-special']
+            };
+            (groups[type] || []).forEach(id => { document.getElementById(id).style.display = 'block'; });
+        });
+        
+        // VIP图标选择
+        document.querySelectorAll('.vip-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // 移除所有选中状态
+                document.querySelectorAll('.vip-option').forEach(el => {
+                    el.classList.remove('selected');
+                });
+                
+                // 添加当前选中状态
+                this.classList.add('selected');
+            });
+        });
+        
+        // 从localStorage加载数据
+        function loadFromStorage() {
+            let data;
+            try { data = JSON.parse(localStorage.getItem('musicProfileData') || 'null'); }
+            catch (error) { return; }
+            if (data && typeof data === 'object') {
+                applyGender(data.gender);
+                applySignature(data.signature);
+                applyBackground(typeof data.background === 'string' && data.background.startsWith('data:image/') ? data.background : '', data.backgroundMode);
+                
+                // 加载用户名
+                if (data.username) {
+                    document.getElementById('username-input').value = data.username;
+                    setUsername(data.username);
+                }
+                
+                // 加载头像
+                if (data.avatar) {
+                    document.getElementById('avatar-img').src = data.avatar;
+                    document.getElementById('avatar-preview').src = data.avatar;
+                }
+                
+                // 加载徽章数量
+                if (data.badgeCount) {
+                    document.getElementById('badge-input').value = data.badgeCount;
+                    document.getElementById('badge-count').textContent = data.badgeCount;
+                }
+                
+                // 加载关注数
+                if (data.followCount) {
+                    document.getElementById('follow-input').value = data.followCount;
+                    document.getElementById('follow-count').textContent = data.followCount;
+                }
+                
+                // 加载粉丝数
+                if (data.fansCount) {
+                    document.getElementById('fans-input').value = data.fansCount;
+                    document.getElementById('fans-count').textContent = data.fansCount;
+                }
+                
+                // 加载等级
+                if (data.level) {
+                    document.getElementById('level-input').value = data.level;
+                    document.getElementById('level').textContent = data.level;
+                }
+                
+                // 加载小时数
+                if (data.hours) {
+                    document.getElementById('hours-input').value = data.hours;
+                    document.getElementById('hours').textContent = data.hours;
+                }
+                
+                // 加载VIP图标
+                if (data.vipImgUrl) {
+                    document.getElementById('vip-img').src = data.vipImgUrl;
+                }
+            }
+        }
+        
+        // 先持久化成功，再更新主页，避免图片过大时假保存。
+        document.getElementById('save-btn').addEventListener('click', function() {
+            const selectedVip = document.querySelector('.vip-option.selected');
+            const data = {
+                username: document.getElementById('username-input').value,
+                gender: document.getElementById('gender-input').value,
+                signature: document.getElementById('signature-input').value.trim().slice(0, 80),
+                avatar: document.getElementById('avatar-preview').src,
+                badgeCount: document.getElementById('badge-input').value,
+                followCount: document.getElementById('follow-input').value,
+                fansCount: document.getElementById('fans-input').value,
+                level: document.getElementById('level-input').value,
+                hours: document.getElementById('hours-input').value,
+                vipImgUrl: selectedVip ? selectedVip.getAttribute('data-url') : document.getElementById('vip-img').getAttribute('src'),
+                background: draftBackground,
+                backgroundMode: document.getElementById('background-mode').value
+            };
+            try { localStorage.setItem('musicProfileData', JSON.stringify(data)); }
+            catch (error) {
+                document.getElementById('background-status').textContent = '保存失败，存储空间不足或不可用，请换一张较小的图片后重试';
+                return;
+            }
+            loadFromStorage();
+            closeEditModal();
+        });
+
+        // 页面加载时从localStorage加载数据
+        window.addEventListener('DOMContentLoaded', function() {
+            loadFromStorage();
+        });
+
+        // 切换标签页功能
+        document.getElementById('music-tab').addEventListener('click', function() {
+            switchTab('music');
+        });
+
+        document.getElementById('podcast-tab').addEventListener('click', function() {
+            switchTab('podcast');
+        });
+
+        document.getElementById('note-tab').addEventListener('click', function() {
+            switchTab('note');
+        });
+
+        function switchTab(tabName) {
+            // 移除所有标签的active类
+            document.querySelectorAll('.tab-item').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // 添加当前标签的active类
+            document.getElementById(tabName + '-tab').classList.add('active');
+            
+            document.getElementById('editable-library').hidden = tabName === 'note';
+            const contentImg = document.getElementById('content-img');
+            contentImg.hidden = true;
+            notesFeed.hidden = tabName !== 'note';
+            document.getElementById('note-compose').hidden = tabName !== 'note';
+            if (tabName === 'note') renderNotes(); else renderLibrary(tabName);
+            syncFiltersDock();
+
+        }
+
+        // 更新提示弹窗相关函数
+        function getCookie(name) {
+            var value = "; " + document.cookie;
+            var parts = value.split("; " + name + "=");
+            if (parts.length == 2) return parts.pop().split(";").shift();
+        }
+
+        function setCookie(name, value, days) {
+            var expires = "";
+            if (days) {
+                var date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
+        function closeUpdatePopup() {
+            var checkbox = document.getElementById("hideFor3Days");
+            if (checkbox.checked) {
+                setCookie("hideUpdatePopup", "true", 3);
+            }
+            document.getElementById("updatePopup").style.display = "none";
+        }
+
+        function showUpdatePopup() {
+            var hidePopup = getCookie("hideUpdatePopup");
+            if (!hidePopup) {
+                document.getElementById("updatePopup").style.display = "flex";
+            }
+        }
+
+        // 页面加载完成后显示更新提示弹窗
+        document.addEventListener('DOMContentLoaded', function() {
+            showUpdatePopup();
+        });
+    </script>
+
+
+
+
+
+
+
+<section class="personal-screen" id="personal-screen" role="dialog" aria-modal="true" aria-label="我的资料" hidden><header class="personal-top"><button type="button" class="personal-back" id="personal-back" aria-label="返回"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m15 3-9 9 9 9"/></svg></button>我的资料</header><div class="personal-scroll"><div class="personal-portrait"><img id="personal-avatar" alt="头像"><button type="button" class="personal-avatar-edit" id="personal-avatar-edit"><svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M3 5h3l1-2h6l1 2h3q2 0 2 2v9H1V7q0-2 2-2z"/><circle cx="10" cy="10" r="3" fill="none" stroke="white"/></svg>更换</button></div><div class="personal-group"><button type="button" class="personal-row" data-personal-field="nickname"><span class="personal-label">昵称</span><span class="personal-value" id="personal-nickname"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></button><button type="button" class="personal-row" data-personal-field="userId"><span class="personal-label">用户ID</span><span class="personal-value" id="personal-userId"></span></button><div class="personal-row"><span class="personal-label">性别</span><span class="personal-value"><span id="personal-gender"></span></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div><div class="personal-row"><span class="personal-label">我的二维码</span><span class="personal-value"><svg class="personal-qr" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="2" y="2" width="7" height="7" rx="1"/><rect x="15" y="2" width="7" height="7" rx="1"/><rect x="2" y="15" width="7" height="7" rx="1"/><path d="M15 15v7M21 15v7"/></svg></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div><div class="personal-row"><span class="personal-label">我的村龄</span><span class="personal-value">9年 (2016年12月创建)</span></div><button type="button" class="personal-row" data-personal-field="ipLocation"><span class="personal-label">IP属地</span><span class="personal-value" id="personal-ipLocation"></span></button></div><div class="personal-group"><button type="button" class="personal-row" data-personal-field="birthday"><span class="personal-label">生日</span><span class="personal-value" id="personal-birthday"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></button><button type="button" class="personal-row" data-personal-field="region"><span class="personal-label">地区</span><span class="personal-value" id="personal-region"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></button><button type="button" class="personal-row" data-personal-field="university"><span class="personal-label">大学</span><span class="personal-value" id="personal-university"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></button><button type="button" class="personal-row" data-personal-field="musicTags"><span class="personal-label">音乐标签</span><span class="personal-value" id="personal-musicTags"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></button><button type="button" class="personal-row" data-personal-field="bio"><span class="personal-label">简介</span><span class="personal-value" id="personal-bio"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></button></div><div class="personal-group"><div class="personal-row"><span class="personal-label">云音乐等级</span><span class="personal-value"><span id="personal-level"></span></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div><div class="personal-row"><span class="personal-label">个人相册</span><span class="personal-value"><span style="color:#9799a8">上传照片介绍自己</span></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div><div class="personal-row"><span class="personal-label">村民证</span><span class="personal-value"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div></div><div class="personal-group"><div class="personal-row"><span class="personal-label">个人主页隐私设置</span><span class="personal-value"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div><div class="personal-row"><span class="personal-label">账号与绑定设置</span><span class="personal-value"></span><svg class="personal-chevron" viewBox="0 0 10 18" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="m2 2 6 7-6 7"/></svg></div></div></div></section><div class="personal-editor" id="personal-editor" hidden><form class="personal-editor-card" id="personal-form"><h3 id="personal-editor-title"></h3><input id="personal-input" maxlength="100" autocomplete="off"><p id="personal-error" role="status"></p><div class="personal-editor-actions"><button type="button" id="personal-cancel">取消</button><button type="submit" id="personal-save">保存</button></div></form></div>
+<script>
+(function(){
+ const screen=document.getElementById('personal-screen'),editor=document.getElementById('personal-editor'),input=document.getElementById('personal-input'),error=document.getElementById('personal-error');
+ let details={userId:'380596016',ipLocation:'上海',birthday:'2026-06-06',region:'海外 波兰',university:'',musicTags:''},editing='',locked=false,previousFocus=null;
+ try{const saved=JSON.parse(localStorage.getItem('musicPersonalDetails')||'null');if(saved&&typeof saved==='object')for(const key of Object.keys(details))if(typeof saved[key]==='string')details[key]=saved[key];}catch(e){}
+ function syncMusicTag(){const value=details.musicTags.trim();const tag=document.getElementById('profile-music-tag'),text=document.getElementById('profile-music-tag-text');tag.hidden=!value;text.textContent=value;tag.title=value;}
+ syncMusicTag();
+ function profile(){try{return JSON.parse(localStorage.getItem('musicProfileData')||'{}')||{};}catch(e){return {};}}
+ function values(){const data=profile();return {...details,nickname:document.querySelector('#username .username-text').textContent,bio:typeof data.signature==='string'?data.signature:''};}
+ function render(){syncMusicTag();const v=values();for(const key of Object.keys(v)){const node=document.getElementById('personal-'+key);if(!node)continue;let text=v[key];if(key==='birthday'&&/^\d{4}-\d{2}-\d{2}$/.test(text)){const [y,m,d]=text.split('-');text=y+'年'+Number(m)+'月'+Number(d)+'日';}node.textContent=text||'请选择';node.classList.toggle('is-empty',!text);node.classList.toggle('personal-tag',key==='musicTags'&&!!text);}const data=profile();document.getElementById('personal-gender').textContent=data.gender==='female'?'女':'男';document.getElementById('personal-level').textContent=document.getElementById('level').textContent;document.getElementById('personal-avatar').src=document.getElementById('avatar-img').src;}
+ function open(){render();locked=document.body.classList.contains('modal-open');previousFocus=document.activeElement;document.body.classList.add('modal-open');screen.hidden=false;screen.querySelector('.personal-scroll').scrollTop=0;document.getElementById('personal-back').focus();}
+ function close(){editor.hidden=true;screen.hidden=true;if(!locked)document.body.classList.remove('modal-open');if(previousFocus)previousFocus.focus();}
+ document.getElementById('username').addEventListener('click',e=>{if(e.target.closest('.vip'))return;e.stopPropagation();open();});
+ document.querySelector('.collapsed-profile-person').addEventListener('click',open);
+ document.getElementById('personal-back').addEventListener('click',close);
+ document.getElementById('personal-avatar-edit').addEventListener('click',()=>{close();openEditModal();});
+ screen.addEventListener('click',e=>{const button=e.target.closest('[data-personal-field]');if(!button)return;editing=button.dataset.personalField;input.type=editing==='birthday'?'date':'text';input.value=values()[editing]||'';input.maxLength=editing==='bio'?80:100;document.getElementById('personal-editor-title').textContent=button.querySelector('.personal-label').textContent;error.textContent='';editor.hidden=false;input.focus();});
+ document.getElementById('personal-cancel').addEventListener('click',()=>{editor.hidden=true;});editor.addEventListener('click',e=>{if(e.target===editor)editor.hidden=true;});
+ document.getElementById('personal-form').addEventListener('submit',e=>{e.preventDefault();const value=input.value.trim();if(editing==='birthday'&&!/^\d{4}-\d{2}-\d{2}$/.test(value)){error.textContent='请选择生日';return;}try{if(editing==='nickname'||editing==='bio'){const data=profile();data[editing==='nickname'?'username':'signature']=value;localStorage.setItem('musicProfileData',JSON.stringify(data));if(editing==='nickname'){setUsername(value);document.getElementById('username-input').value=value;}else applySignature(value);}else{const next={...details,[editing]:value};localStorage.setItem('musicPersonalDetails',JSON.stringify(next));details=next;}render();editor.hidden=true;}catch(e){error.textContent='保存失败，请检查存储空间后重试';}});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!screen.hidden){if(!editor.hidden)editor.hidden=true;else close();}});
+})();
+</script>
+<script>
+(function(){
+ document.querySelectorAll('[data-image-picker]').forEach(button=>button.addEventListener('click',()=>document.getElementById(button.dataset.imagePicker).click()));
+ for(const kind of ['avatar','background'])document.getElementById(kind+'-upload').addEventListener('change',function(){document.getElementById(kind+'-selection').textContent=this.files&&this.files.length&&this.value?(kind==='avatar'?'已选择':'已选择图片'):'未选择图片';});
+})();
+</script>
+</body>
+<!-- Mirrored from wy.qq7q7.top/ by HTTrack Website Copier/3.x [XR&CO'2014], Fri, 03 Jul 2026 23:25:24 GMT -->
+</html>
+
+    
